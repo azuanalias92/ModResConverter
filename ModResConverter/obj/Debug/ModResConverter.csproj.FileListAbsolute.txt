@@ -1,0 +1,15 @@
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csprojAssemblyReference.cache
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\MainWindow.g.cs
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\App.g.cs
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter_MarkupCompile.cache
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter_MarkupCompile.lref
+C:\Dev\ModResConverter\ModResConverter\bin\Debug\ModResConverter.exe.config
+C:\Dev\ModResConverter\ModResConverter\bin\Debug\ModResConverter.exe
+C:\Dev\ModResConverter\ModResConverter\bin\Debug\ModResConverter.pdb
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\MainWindow.baml
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.g.resources
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.Properties.Resources.resources
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csproj.GenerateResource.cache
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csproj.CoreCompileInputs.cache
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.exe
+C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.pdb
