@@ -5,6 +5,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Linq;
+using System.Data;
+using System.Collections.Generic;
+using ClosedXML.Excel;
 
 namespace ModResConverter
 {
@@ -15,9 +19,8 @@ namespace ModResConverter
     {
         //StreamReader objInput = null;
         string contents, filePath, dataValue, dataPrint;
-        int maxValue;
-
-
+        string[,] fileArray;
+        List<GridData> dataGrids;
 
         public MainWindow()
         {
@@ -26,12 +29,14 @@ namespace ModResConverter
             //Application.Current.MainWindow.WindowState = WindowState.Maximized;
             export.IsEnabled = false;
             comboX.IsEnabled = false;
+            comboY.IsEnabled = false;
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
         {
             // do something
             comboX.Items.Clear();
+            comboY.Items.Clear();
             OpenDialog();
         }
 
@@ -44,100 +49,170 @@ namespace ModResConverter
             if (fileDialog.ShowDialog() == true)
             {
                 filePath = fileDialog.FileName;
+                int i = 0, j = 0;
+                
 
-                int i = 0, countRow = 0;
-
-                path1.Text = filePath;
-
-                StreamReader objInput = new StreamReader(filePath, System.Text.Encoding.Default);
-                contents = objInput.ReadToEnd().Trim();
-                string[] split = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
-                foreach (string s in split)
+                try
                 {
-                    if (i < 1)
+                    StreamReader objInput = new StreamReader(filePath, System.Text.Encoding.Default);
+                    contents = objInput.ReadToEnd().Trim();
+                    string[] split = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
+                    fileArray = new string[split.Length, 4];
+                    string[] arrayYaxis = new string[split.Length];
+                    string[] arrayXaxis = new string[split.Length];
+                    //string[] arrayZaxis = new string[split.Length];
+                    foreach (string s in split)
                     {
-                        string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
-                        foreach (string p in space)
+
+                        //Console.WriteLine(s);
+                        if (i > 0)
                         {
-                            countRow++;
-                            comboX.Items.Add(countRow);
-                            //combo1.SelectedIndex = 1;
-                            maxValue = countRow;
+                            string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
+                            foreach (string p in space)
+                            {
+                                //Console.WriteLine(i + "/" + p);
+                                if (j == 1)
+                                {
+                                    if (arrayXaxis.Contains(p) == false)
+                                    {
+                                        comboX.Items.Add(p);
+                                    }
+                                    arrayXaxis[i] = p;
+                                    fileArray[i,j] = p;
+                                    j++;
+                                }
+                                else if (j == 2)
+                                {
+                                    if (arrayYaxis.Contains(p) == false)
+                                    {
+                                        comboY.Items.Add(p);
+                                    }
+                                    arrayYaxis[i] = p;
+                                    fileArray[i, j] = p;
+                                    j++;
+                                }
+                                else if (j == 3)
+                                {
+                                    //Console.WriteLine(p);
+                                    fileArray[i, j] = p;
+                                    j = 0;
+                                }
+                                else
+                                {
+                                    j++;
+                                }
+                            }
                         }
+
+                        i++;
+                        
                     }
 
-                    i++;
-                }
+                    //Console.WriteLine(i);
 
-                comboX.IsEnabled = true;
+                    comboX.IsEnabled = true;
+                    comboY.IsEnabled = true;
+                    path1.Text = filePath;
+                    
+                }
+                catch (IOException)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please currently use by another proceess.");
+                }
+                
+                
+
             }
         }
 
-        private void combo1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void comboX_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int selectedIndex = comboX.SelectedIndex;
+            String selectedValue = (String)comboX.SelectedValue;
+            //Console.WriteLine(selectedValue);
+            dataGrids = new List<GridData>();
 
-            int i = 0;
-            dataValue = null;
-            int localMaxValue = maxValue - 1;
-            string[] splits = System.Text.RegularExpressions.Regex.Split(contents, "\\s+", RegexOptions.None);
-            foreach (string s in splits)
+
+            dataValue = "X Y Z \r";
+            for (int k = 1; k < fileArray.GetLength(0); k++)
             {
-
-                //Console.WriteLine(selectedIndex + "/" + i + "/" + localMaxValue) ;
-                if (i == selectedIndex)
+                if (fileArray[k, 1] == selectedValue)
                 {
-
-                    dataValue = dataValue + s + "\r";
-                    dataPrint = dataPrint + s + Environment.NewLine;
-                    i++;
-
-                    //last value
-                    if (selectedIndex == localMaxValue)
+                    dataGrids.Add(new GridData()
                     {
-                        i = 0;
-                        //Console.WriteLine("skip");
-                    }
+                        X = fileArray[k, 1],
+                        Y = fileArray[k, 2],
+                        Z = fileArray[k, 3]
+                    });
+                    //dataValue = dataValue + fileArray[k, 1] + " "  + fileArray[k, 2] + " "  + fileArray[k, 3] + "\r";
+                    dataPrint = dataPrint + fileArray[k, 3] + Environment.NewLine;
                 }
-                else if (i == localMaxValue)
-                {
-                    i = 0;
-                    //Console.WriteLine("skip");
-                }
-                else
-                {
-                    //default
-                    i++;
-                }
-
-
             }
 
-            box1.Text = dataValue;
+           
+
+            dataGrid1.ItemsSource = dataGrids;
             export.IsEnabled = true;
+        }
+
+        private void comboY_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            String selectedValue = (String)comboY.SelectedValue;
+            dataValue = null;
+
+            dataGrids = new List<GridData>();
+
+            for (int k = 1; k < fileArray.GetLength(0); k++)
+            {
+                if (fileArray[k, 2] == selectedValue)
+                {
+                    dataGrids.Add(new GridData()
+                    {
+                        X = fileArray[k, 1],
+                        Y = fileArray[k, 2],
+                        Z = fileArray[k, 3]
+                    });
+                    dataValue = dataValue + fileArray[k, 3] + "\r";
+                    dataPrint = dataPrint + fileArray[k, 3] + Environment.NewLine;
+                }
+            }
+
+            dataGrid1.ItemsSource = dataGrids;
+            export.IsEnabled = true;
+
         }
 
         private void export_Click(object sender, RoutedEventArgs e)
         {
 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "Document"; // Default file name
-            dlg.DefaultExt = ".xlsx";
-            dlg.Filter = "Spreedsheet documents (.xlsx)|*.xlsx";
-
-            // Show save file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process save file dialog box results
-            if (result == true)
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
             {
+                Filter = "Excel files|*.xlsx",
+                Title = "Save an Excel File"
+            };
 
-                // Save document
-                string filename = dlg.FileName;
-                //Console.WriteLine(filename);
+            saveFileDialog.ShowDialog();
 
-                System.IO.File.WriteAllText(filename, dataPrint);
-                System.Windows.MessageBox.Show("Succesfully exported");
+            if (!String.IsNullOrWhiteSpace(saveFileDialog.FileName))
+            {
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Data");
+                    int row = 2;
+                    worksheet.Cell("A1").Value = "X";
+                    worksheet.Cell("B1").Value = "Y";
+                    worksheet.Cell("C1").Value = "Z";
+                    foreach (GridData GridData in dataGrids)
+                    {
+                        worksheet.Cell("A" + row.ToString()).Value = GridData.X.ToString();
+                        worksheet.Cell("B" + row.ToString()).Value = GridData.Y.ToString();
+                        worksheet.Cell("C" + row.ToString()).Value = GridData.Z.ToString();
+                        row++;
+
+                    }
+                    workbook.SaveAs(saveFileDialog.FileName);
+
+                    System.Windows.MessageBox.Show("Successfully Export");
+                }
             }
         }
     }

@@ -9,12 +9,28 @@
     <Grid Background="CadetBlue" Margin="0,0,2,-4">
         <Button x:Name="btn1" Click="btn1_Click" Content="Upload" HorizontalAlignment="Left" Margin="500,50,0,0" VerticalAlignment="Top" Width="125"/>
         <TextBox x:Name="path1" HorizontalAlignment="Left" Height="23" Margin="50,50,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="400"/>
-        <TextBox x:Name="box1" HorizontalAlignment="Left" Height="250" Margin="50,100,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="400" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>
-        <ComboBox x:Name="comboX"  HorizontalAlignment="Left" Margin="500,126,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="combo1_SelectionChanged"/>
+        <!--<TextBox x:Name="box1" HorizontalAlignment="Left" Height="250" Margin="50,100,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="400" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>-->
+        <ComboBox x:Name="comboX"  HorizontalAlignment="Left" Margin="500,126,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboX_SelectionChanged"/>
         <Button x:Name="export" Content="Export" HorizontalAlignment="Left" Margin="500,330,0,0" VerticalAlignment="Top" Width="120" Click="export_Click"/>
         <Label Content="File Path" HorizontalAlignment="Left" Margin="50,20,0,0" VerticalAlignment="Top" Width="100" Foreground="White"/>
         <Label Content="X-location" HorizontalAlignment="Left" Margin="500,100,0,0" VerticalAlignment="Top"  Foreground="White"/>
         <Label Content="Y-location" HorizontalAlignment="Left" Margin="500,170,0,0" VerticalAlignment="Top"  Foreground="White"/>
-        <ComboBox x:Name="comboY"  HorizontalAlignment="Left" Margin="500,196,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="combo1_SelectionChanged"/>
+        <ComboBox x:Name="comboY"  HorizontalAlignment="Left" Margin="500,196,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboY_SelectionChanged"/>
+        <DataGrid x:Name="dataGrid1" HorizontalAlignment="Left" Height="250" Margin="50,100,0,0"  VerticalAlignment="Top" Width="400" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Padding="0">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Padding" Value="10"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.CellStyle>
+        </DataGrid>
     </Grid>
 </Window>
