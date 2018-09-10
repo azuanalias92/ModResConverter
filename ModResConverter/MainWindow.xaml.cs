@@ -3,9 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-//using System.Windows.Forms;
 using System.Linq;
-using System.Data;
 using System.Collections.Generic;
 using ClosedXML.Excel;
 using Microsoft.Win32;
@@ -34,6 +32,7 @@ namespace ModResConverter
             export.IsEnabled = false;
             comboX.IsEnabled = false;
             comboY.IsEnabled = false;
+            comboSpace.IsEnabled = false;
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
@@ -41,12 +40,14 @@ namespace ModResConverter
             // do something
             comboX.Items.Clear();
             comboY.Items.Clear();
+            comboSpace.Items.Clear();
+            path1.Items.Clear();
             OpenDialog();
         }
 
         private void OpenDialog()
         {
-            path1.Items.Clear();
+            
             lengthArray = 0;
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.DefaultExt = ".dat"; // Required file extension 
@@ -65,7 +66,15 @@ namespace ModResConverter
                 else
                 {
                     //MessageBox.Show("excel file");
-                    openExcelFile(fileDialog);
+                    if (Properties.Settings.Default.SP_Setting)
+                    {
+                        openExcelFile(fileDialog);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Test");
+                    }
+                    
                 }
                 
 
@@ -76,6 +85,8 @@ namespace ModResConverter
         {
             dataSP = new List<GridSP>();
             string fileName = fileDialog.FileName;
+            int maxStation = 0;
+
             using (var excelWorkbook = new XLWorkbook(fileName))
             {
                 var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
@@ -122,12 +133,32 @@ namespace ModResConverter
 
 
                         });
-                        //Console.WriteLine(date_);
+                        
+                        //find highest value for comboSpace
+                        int valueOut = 0;
+                        if (int.TryParse(station_, out valueOut))
+                        {
+                            
+                            if (Convert.ToInt32(station_) > maxStation)
+                            {
+                                Console.WriteLine(station_);
+                                maxStation = Convert.ToInt32(station_);
+                            }
+
+                        }
+
                     }
                     i = 1;
+                    
+                    
                 }
             }
+            for (int a = 0; a <= maxStation;  a++)
+            {
+                comboSpace.Items.Add(a);
+            }
             dataGrid1.ItemsSource = dataSP;
+            comboSpace.IsEnabled = true;
 
 
         }
@@ -297,6 +328,24 @@ namespace ModResConverter
 
         }
 
+        private void comboSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int selectedValue = (int)comboSpace.SelectedValue;
+            string select = selectedValue.ToString();
+            Console.WriteLine(selectedValue);
+            List<GridSP> newGridSP = dataSP;
+
+            foreach (GridSP eachSP in dataSP)
+            {
+                //var itemToRemove = dataSP.Single(r => r.station != select);
+                if (eachSP.station != select)
+                {
+                    newGridSP.Remove(eachSP);
+                }
+            }
+            dataGrid1.ItemsSource = newGridSP;
+        }
+
         private void export_Click(object sender, RoutedEventArgs e)
         {
 
@@ -332,6 +381,12 @@ namespace ModResConverter
                     MessageBox.Show("Successfully Export");
                 }
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Settings win1 = new Settings();
+            win1.Show();
         }
     }
 }

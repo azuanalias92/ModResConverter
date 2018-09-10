@@ -6,7 +6,19 @@
         xmlns:local="clr-namespace:ModResConverter"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="680">
+    
     <Grid Background="CadetBlue" Margin="0,0,0,0">
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" Click="btn1_Click"/>
+                    <MenuItem Header="_Export" Click="export_Click"/>
+                </MenuItem>
+                <MenuItem Header="_Settings" Click="MenuItem_Click">
+                </MenuItem>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
         <Button x:Name="btn1" Click="btn1_Click" Content="Upload" HorizontalAlignment="Left" Margin="500,50,0,0" VerticalAlignment="Top" Width="125" Height="25" />
         <ListBox x:Name="path1" HorizontalAlignment="Left" Height="100" Margin="50,50,0,0"   VerticalAlignment="Top" Width="400"/>
         <!--<TextBox x:Name="box1" HorizontalAlignment="Left" Height="250" Margin="50,100,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="400" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>-->
@@ -32,5 +44,7 @@
                 </Style>
             </DataGrid.CellStyle>
         </DataGrid>
+        <Label Content="Space" HorizontalAlignment="Left" Margin="500,245,0,0" VerticalAlignment="Top"  Foreground="White"/>
+        <ComboBox x:Name="comboSpace"  HorizontalAlignment="Left" Margin="500,275,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboSpace_SelectionChanged"/>
     </Grid>
 </Window>
