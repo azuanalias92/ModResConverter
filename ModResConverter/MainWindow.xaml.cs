@@ -25,6 +25,9 @@ namespace ModResConverter
         int[] coordinateArray = new int[10];
         Settings win1;
         OpenFileDialog fileDialog;
+        string[] arrayYaxis;
+        string[] arrayXaxis;
+        List<string> TempList;
 
         public MainWindow()
         {
@@ -55,9 +58,6 @@ namespace ModResConverter
             
             lengthArray = 0;
             fileDialog = new OpenFileDialog();
-            //fileDialog.DefaultExt = ".dat"; // Required file extension 
-            //fileDialog.Filter = "DAT Files |*.dat; | Excel Files|*.xls;*.xlsx;*.xlsm"; // Optional file extensions
-            //fileDialog.Filter = ;
             if (Properties.Settings.Default.SP_Setting)
             {
                 fileDialog.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
@@ -75,16 +75,16 @@ namespace ModResConverter
                 //MessageBox.Show("excel file");
                 if (Properties.Settings.Default.SP_Setting)
                 {
-                    openExcelFile();
+                    openSPExcelFile();
                 }
                 else
                 {
-                    openDATFile();
+                    openFile();
                 }           
             }
         }
 
-        private void openExcelFile()
+        private void openSPExcelFile()
         {
             dataSP = new List<GridSP>();
             string fileName = fileDialog.FileName;
@@ -180,165 +180,47 @@ namespace ModResConverter
             }
         }
 
-        private void openDATFile()
+        private void openFile()
         {
             //looping for length of each file
             int a = 1;
+            arrayYaxis = new string[1000];
+            arrayXaxis = new string[1000];
+            TempList = new List<string>();
+            fileArray = new string[1000, 4];
+            int countLine = 0;
             foreach (string filelength in fileDialog.FileNames)
             {
                 string fileType = Path.GetExtension(filelength);
-                Console.WriteLine(fileType);
-                if(fileType  == ".dat")
-                {
-                    try
-                    {
-                        StreamReader objInputs = new StreamReader(filelength, System.Text.Encoding.Default);
-                        contents = objInputs.ReadToEnd().Trim();
-                        string[] splits = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
-                        lengthArray = lengthArray + splits.Length;
-                        //Console.WriteLine(lengthArray);
-                        coordinateArray[a] = lengthArray;
-                        a++;
-                    }
-                    catch (IOException)
-                    {
-                        MessageBox.Show("Please currently use by another proceess.");
-                    }
-                }
-                else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
-                {
-                    lengthArray = 1000;
-                }
-                else
-                {
-                    MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
-                }
-            }
+                //Console.WriteLine(fileType);
 
-            //do process
-            int i = 0, j = 0;
-            countLine = 1;
-            fileArray = new string[lengthArray, 4];
-            string[] arrayYaxis = new string[lengthArray];
-            string[] arrayXaxis = new string[lengthArray];
-
-            foreach (string filename in fileDialog.FileNames)
-            {
-                string fileType = Path.GetExtension(filename);
-                path1.Items.Add(filename);
                 if (fileType == ".dat")
                 {
-                    int skip = 0;
-                    try
-                    {
-                        StreamReader objInput = new StreamReader(filename, System.Text.Encoding.Default);
-                        contents = objInput.ReadToEnd().Trim();
-                        string[] split = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
-
-                        foreach (string s in split)
-                        {
-
-                            //Console.WriteLine(s);
-                            if (skip != 0)
-                            {
-                                string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
-                                foreach (string p in space)
-                                {
-                                    //Console.WriteLine(i + "/" + p);
-                                    string p_replace = p.Replace("\"", "");
-                                    if (j == 1)
-                                    {
-                                        if (arrayXaxis.Contains(p) == false && p_replace != "X-location,Z-location,Resistivity")
-                                        {
-                                            comboX.Items.Add(p);
-                                        }
-                                        arrayXaxis[i] = p;
-                                        fileArray[i, j] = p;
-                                        j++;
-                                    }
-                                    else if (j == 2)
-                                    {
-                                        if (arrayYaxis.Contains(p) == false)
-                                        {
-                                            comboY.Items.Add(p);
-                                        }
-                                        arrayYaxis[i] = p;
-                                        fileArray[i, j] = p;
-                                        j++;
-                                    }
-                                    else if (j == 3)
-                                    {
-                                        //Console.WriteLine(p);
-                                        fileArray[i, j] = p;
-                                        j = 0;
-                                    }
-                                    else
-                                    {
-                                        j++;
-                                    }
-                                }
-                            }
-                            skip = 1;
-                            i++;
-
-                        }
-
-                    }
-                    catch (IOException)
-                    {
-                        MessageBox.Show("Please currently use by another proceess.");
-                    }
-                    countLine++;
+                    countLine = datFileOperation(a, filelength, countLine);
                 }
                 else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                 {
-                    using (var excelWorkbook = new XLWorkbook(filename))
-                    {
-                        var ws = excelWorkbook.Worksheet(1);
-                        var nonEmptyDataRows = ws.RowsUsed().Count();
-                        Console.WriteLine(nonEmptyDataRows);
-
-                        for (int n = 2; n < nonEmptyDataRows; n++)
-                        {
-                            //getdata
-                            String x = ws.Cell(n, 1).GetString();
-                            String y = ws.Cell(n, 2).GetString();
-                            String z = ws.Cell(n, 3).GetString();
-
-
-                            //add to x,y,z axis
-                            if(arrayXaxis.Contains(x) == false)
-                            {
-                                comboX.Items.Add(x);
-                            }
-                            arrayXaxis[n] = x;
-                            fileArray[n, 1] = x;
-
-                            if (arrayYaxis.Contains(y) == false)
-                            {
-                                comboY.Items.Add(y);
-                            }
-                            arrayYaxis[n] = y;
-                            fileArray[n, 2] = y;
-
-                            fileArray[n, 3] = z;
-                            //Boolean cellDouble = (Boolean)cellBoolean.Value;
-                            //Console.WriteLine(x);
-                        }
-                    }
-
+                    countLine =  excelFileOperation(a, filelength, countLine);
                 }
                 else
                 {
                     MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
                 }
-                
+                a++;
+                path1.Items.Add(filelength);
+            }
 
-                
+            //Sort Value ComboBox
+            TempList.Sort();
+            foreach (string ListValue in TempList)
+            {
+                comboX.Items.Add(ListValue);
             }
 
             comboX.IsEnabled = true;
             comboY.IsEnabled = true;
+
+
         }
 
         private void comboX_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -348,6 +230,7 @@ namespace ModResConverter
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
+            Console.WriteLine(coordinateArray[2] + "/" + lengthArray);
             for (int k = 1; k < lengthArray ; k++)
             {
 
@@ -355,8 +238,6 @@ namespace ModResConverter
                 {
                     z++;
                     lines = "Line " + z;
-                    //Console.WriteLine(coordinateArray[z]);
-                    //Console.WriteLine(lines);
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
                 if (fileArray[k, 1] == selectedValue)
@@ -380,16 +261,23 @@ namespace ModResConverter
         {
             String selectedValue = (String)comboY.SelectedValue;
             dataGrids = new List<GridData>();
-
+            int z = 1;
+            string lines = "Line 1";
             for (int k = 1; k < lengthArray; k++)
             {
+
+                if (coordinateArray[z] == k)
+                {
+                    z++;
+                    lines = "Line " + z;
+                }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
                 if (fileArray[k, 2] == selectedValue)
                 {
 
                     dataGrids.Add(new GridData()
                     {
-                        line = "Line " + k,
+                        line = lines,
                         X = fileArray[k, 1],
                         Y = fileArray[k, 2],
                         Z = fileArray[k, 3]
@@ -976,6 +864,130 @@ namespace ModResConverter
 
             }
             
+        }
+
+        private int datFileOperation(int a, string filelength, int countline)
+        {
+            //Console.WriteLine(a);
+            try
+            {
+                StreamReader objInputs = new StreamReader(filelength, System.Text.Encoding.Default);
+                contents = objInputs.ReadToEnd().Trim();
+                string[] splits = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
+                lengthArray = lengthArray + splits.Length;
+                coordinateArray[a] = lengthArray;
+                a++;
+                //Console.WriteLine(lengthArray);
+
+                int skip = 0, i = countline;
+                foreach (string s in splits)
+                {
+
+                    //Console.WriteLine(s);
+                    if (skip != 0)
+                    {
+                        int j = 0;
+                        string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
+                        foreach (string p in space)
+                        {
+                            //Console.WriteLine(i + "/" + p);
+                            string p_replace = p.Replace("\"", "");
+                            if (j == 1)
+                            {
+                                if (arrayXaxis.Contains(p) == false && p_replace != "X-location,Z-location,Resistivity")
+                                {
+                                    //comboX.Items.Add(p);
+                                    TempList.Add(p);
+
+                                }
+                                arrayXaxis[i] = p;
+                                fileArray[i, j] = p;
+                                j++;
+                            }
+                            else if (j == 2)
+                            {
+                                if (arrayYaxis.Contains(p) == false)
+                                {
+                                    comboY.Items.Add(p);
+                                }
+                                arrayYaxis[i] = p;
+                                fileArray[i, j] = p;
+                                j++;
+                            }
+                            else if (j == 3)
+                            {
+                                //Console.WriteLine(p);
+                                fileArray[i, j] = p;
+                                j = 0;
+                            }
+                            else
+                            {
+                                j++;
+                            }
+                        }
+                    }
+                    skip = 1;
+                    i++;
+
+                }
+                countline = i;
+
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Please currently use by another proceess.");
+            }
+
+            return countline;
+        }
+
+        private int excelFileOperation( int a, string filelength, int countline)
+        {
+
+            using (var excelWorkbook = new XLWorkbook(filelength))
+            {
+                var ws = excelWorkbook.Worksheet(1);
+                var nonEmptyDataRows = ws.RowsUsed().Count();
+                int row = nonEmptyDataRows + countline;
+                int m;
+                Console.WriteLine( a +" / " + row);
+                coordinateArray[a] = row;
+                lengthArray = row;
+
+                for (int n = 2; n < nonEmptyDataRows; n++)
+                {
+                    m = countline + n;
+                    //Console.WriteLine(m);
+                    //getdata
+                    String x = ws.Cell(n, 1).GetString();
+                    String y = ws.Cell(n, 2).GetString();
+                    String z = ws.Cell(n, 3).GetString();
+                    //Console.WriteLine(z);
+
+
+                    //add to x,y,z axis
+                    if (arrayXaxis.Contains(x) == false)
+                    {
+                        comboX.Items.Add(x);
+                        //Console.WriteLine(x);
+                    }
+                    arrayXaxis[m] = x;
+                    fileArray[m, 1] = x;
+
+                    if (arrayYaxis.Contains(y) == false)
+                    {
+                        comboY.Items.Add(y);
+                    }
+                    arrayYaxis[m] = y;
+                    fileArray[m, 2] = y;
+                    fileArray[m, 3] = z;
+                    //Boolean cellDouble = (Boolean)cellBoolean.Value;
+                    //Console.WriteLine(x);
+                }
+
+                countline = row;
+            }
+            return countline;
         }
 
     }
