@@ -19,6 +19,7 @@
         public string x { get; set; }
         public string y { get; set; }
         public string remarks { get; set; }
+        public string UTM { get; set; }
 
 
     }

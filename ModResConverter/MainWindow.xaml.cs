@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 using ClosedXML.Excel;
 using Microsoft.Win32;
+using CoordinateSharp;
 
 namespace ModResConverter
 {
@@ -18,7 +19,7 @@ namespace ModResConverter
         //StreamReader objInput = null;
         string contents;
         string[,] fileArray;
-        int countLine;
+        //int countLine;
         List<GridData> dataGrids;
         List<GridSP> dataSP;
         int lengthArray;
@@ -38,6 +39,8 @@ namespace ModResConverter
             comboX.IsEnabled = false;
             comboY.IsEnabled = false;
             comboSpace.IsEnabled = false;
+
+            
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
@@ -75,10 +78,14 @@ namespace ModResConverter
                 //MessageBox.Show("excel file");
                 if (Properties.Settings.Default.SP_Setting)
                 {
+                    comboX.IsEnabled = false;
+                    comboY.IsEnabled = false;
                     openSPExcelFile();
                 }
                 else
                 {
+                    
+                    comboSpace.IsEnabled = false;
                     openFile();
                 }           
             }
@@ -186,8 +193,9 @@ namespace ModResConverter
             int a = 1;
             arrayYaxis = new string[1000];
             arrayXaxis = new string[1000];
+            fileArray = new string[10000, 4];
             TempList = new List<string>();
-            fileArray = new string[1000, 4];
+            
             int countLine = 0;
             foreach (string filelength in fileDialog.FileNames)
             {
@@ -200,7 +208,9 @@ namespace ModResConverter
                 }
                 else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                 {
+                    Console.WriteLine(countLine);
                     countLine =  excelFileOperation(a, filelength, countLine);
+                    
                 }
                 else
                 {
@@ -226,11 +236,12 @@ namespace ModResConverter
         private void comboX_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             String selectedValue = (String)comboX.SelectedValue;
-            
+            String selectedValueY = (String)comboY.SelectedValue;
+            //Console.WriteLine("Selected value Y: " + selectedValueY);
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-            Console.WriteLine(coordinateArray[2] + "/" + lengthArray);
+            //Console.WriteLine(coordinateArray[2] + "/" + lengthArray);
             for (int k = 1; k < lengthArray ; k++)
             {
 
@@ -240,16 +251,25 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 1] == selectedValue)
+                if (fileArray[k, 1] == selectedValue || selectedValue == "ALL")
                 {
-                    dataGrids.Add(new GridData()
+                    if(fileArray[k, 2] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                     {
-                        line = lines,
-                        //line = "Line " + k,
-                        X = fileArray[k, 1],
-                        Y = fileArray[k, 2],
-                        Z = fileArray[k, 3]
+                        Double x_double;
+                        Double.TryParse(fileArray[k, 1], out x_double);
+                        Double y_double;
+                        Double.TryParse(fileArray[k, 2], out y_double);
+                        Coordinate c = new Coordinate(x_double, y_double, new DateTime(2018, 6, 5, 10, 10, 0));
+                        dataGrids.Add(new GridData()
+                        {
+                            line = lines,
+                            X = fileArray[k, 1],
+                            Y = fileArray[k, 2],
+                            //UTM = Convert.ToString(c.UTM),
+                            Z = fileArray[k, 3]
+                            
                     });
+                    }
                 }
             }
 
@@ -260,6 +280,8 @@ namespace ModResConverter
         private void comboY_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             String selectedValue = (String)comboY.SelectedValue;
+            String selectedValueX = (String)comboX.SelectedValue;
+
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
@@ -272,16 +294,19 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 2] == selectedValue)
+                if (fileArray[k, 2] == selectedValue || selectedValue == "ALL")
                 {
-
-                    dataGrids.Add(new GridData()
+                    if (fileArray[k, 1] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                     {
-                        line = lines,
-                        X = fileArray[k, 1],
-                        Y = fileArray[k, 2],
-                        Z = fileArray[k, 3]
-                    });
+                        dataGrids.Add(new GridData()
+                        {
+                            line = lines,
+                            X = fileArray[k, 1],
+                            Y = fileArray[k, 2],
+                            Z = fileArray[k, 3]
+                        });
+                    }
+                       
                 }
             }
 
@@ -293,7 +318,16 @@ namespace ModResConverter
         private void comboSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             dataSP.Clear();
-            int selectedValue = (int)comboSpace.SelectedValue;
+            int selectedValue;
+            try
+            {
+                 selectedValue = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                 selectedValue = 1;
+            }
+            
             string select = selectedValue.ToString();
             string fileName = fileDialog.FileName;
             try
@@ -879,7 +913,19 @@ namespace ModResConverter
                 a++;
                 //Console.WriteLine(lengthArray);
 
+                //default value
+                if (!comboX.Items.Contains("ALL"))
+                {
+                    comboX.Items.Add("ALL");
+                }
+                if (!comboY.Items.Contains("ALL"))
+                {
+                    comboY.Items.Add("ALL");
+                }
+
+                
                 int skip = 0, i = countline;
+
                 foreach (string s in splits)
                 {
 
@@ -943,21 +989,31 @@ namespace ModResConverter
 
         private int excelFileOperation( int a, string filelength, int countline)
         {
-
+            //Console.WriteLine(filelength);
             using (var excelWorkbook = new XLWorkbook(filelength))
             {
                 var ws = excelWorkbook.Worksheet(1);
                 var nonEmptyDataRows = ws.RowsUsed().Count();
                 int row = nonEmptyDataRows + countline;
                 int m;
-                Console.WriteLine( a +" / " + row);
+                //Console.WriteLine( a +" / " + row);
                 coordinateArray[a] = row;
                 lengthArray = row;
+
+                //default value
+                if (!comboX.Items.Contains("ALL"))
+                {
+                    comboX.Items.Add("ALL");
+                }
+                if (!comboY.Items.Contains("ALL"))
+                {
+                    comboY.Items.Add("ALL");
+                }
 
                 for (int n = 2; n < nonEmptyDataRows; n++)
                 {
                     m = countline + n;
-                    //Console.WriteLine(m);
+                    Console.WriteLine(m);
                     //getdata
                     String x = ws.Cell(n, 1).GetString();
                     String y = ws.Cell(n, 2).GetString();
@@ -973,6 +1029,7 @@ namespace ModResConverter
                     }
                     arrayXaxis[m] = x;
                     fileArray[m, 1] = x;
+                   //Console.WriteLine(n);
 
                     if (arrayYaxis.Contains(y) == false)
                     {
@@ -990,5 +1047,16 @@ namespace ModResConverter
             return countline;
         }
 
+        private void clearBtn_Click(object sender, RoutedEventArgs e)
+        {
+            comboX.Items.Clear();
+            comboY.Items.Clear();
+            comboSpace.Items.Clear();
+            path1.Items.Clear();
+            dataGrids = null;
+            dataSP = null;
+            dataGrid1.ItemsSource = null;
+            //dataGrids.Clear();
+        }
     }
 }

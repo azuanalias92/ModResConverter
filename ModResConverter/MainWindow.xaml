@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModResConverter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="1080">
+        Title="MainWindow" Height="600" Width="1080">
     
     <Grid Background="CadetBlue" Margin="0,0,0,0">
         <DockPanel>
@@ -47,5 +47,6 @@
         </DataGrid>
         <Label Content="Space" HorizontalAlignment="Left" Margin="900,125,0,0" VerticalAlignment="Top"  Foreground="White"/>
         <ComboBox x:Name="comboSpace"  HorizontalAlignment="Left" Margin="900,150,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboSpace_SelectionChanged"/>
+        <Button x:Name="clearBtn" Content="Reset" HorizontalAlignment="Left" Margin="950,530,0,0" VerticalAlignment="Top" Width="75" Background="White" FontSize="16" Click="clearBtn_Click"/>
     </Grid>
 </Window>

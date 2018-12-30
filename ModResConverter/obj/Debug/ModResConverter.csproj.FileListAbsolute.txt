@@ -24,4 +24,6 @@ C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csproj.CoreComp
 C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csproj.CopyComplete
 C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.exe
 C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.pdb
+C:\Dev\ModResConverter\ModResConverter\bin\Debug\CoordinateSharp.dll
+C:\Dev\ModResConverter\ModResConverter\bin\Debug\CoordinateSharp.xml
 C:\Dev\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csprojAssemblyReference.cache
