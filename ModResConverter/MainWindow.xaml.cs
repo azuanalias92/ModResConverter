@@ -19,7 +19,7 @@ namespace ModResConverter
         //StreamReader objInput = null;
         string contents;
         string[,] fileArray;
-        //int countLine;
+        int countLine = 0;
         List<GridData> dataGrids;
         List<GridSP> dataSP;
         int lengthArray;
@@ -193,22 +193,31 @@ namespace ModResConverter
             int a = 1;
             arrayYaxis = new string[1000];
             arrayXaxis = new string[1000];
-            fileArray = new string[10000, 4];
+            //
             TempList = new List<string>();
             
+            int totalLine = 0;
             int countLine = 0;
             foreach (string filelength in fileDialog.FileNames)
             {
+                totalLine += File.ReadLines(filelength).Count();
+            }
+            totalLine = totalLine + 1000;
+            Console.WriteLine("total Line:" + totalLine);
+            //fileArray = new string[countLines, 3];
+
+            foreach (string filelength in fileDialog.FileNames)
+            {
                 string fileType = Path.GetExtension(filelength);
-                //Console.WriteLine(fileType);
+                
 
                 if (fileType == ".dat")
                 {
-                    countLine = datFileOperation(a, filelength, countLine);
+                    countLine =  datFileOperation(a, filelength, countLine, totalLine);
                 }
                 else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                 {
-                    Console.WriteLine(countLine);
+                   // Console.WriteLine(countLine);
                     countLine =  excelFileOperation(a, filelength, countLine);
                     
                 }
@@ -251,22 +260,22 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 1] == selectedValue || selectedValue == "ALL")
+                if (fileArray[k, 0] == selectedValue || selectedValue == "ALL")
                 {
-                    if(fileArray[k, 2] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
+                    if(fileArray[k, 1] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                     {
                         Double x_double;
-                        Double.TryParse(fileArray[k, 1], out x_double);
+                        Double.TryParse(fileArray[k, 0], out x_double);
                         Double y_double;
-                        Double.TryParse(fileArray[k, 2], out y_double);
+                        Double.TryParse(fileArray[k, 1], out y_double);
                         Coordinate c = new Coordinate(x_double, y_double, new DateTime(2018, 6, 5, 10, 10, 0));
                         dataGrids.Add(new GridData()
                         {
                             line = lines,
-                            X = fileArray[k, 1],
-                            Y = fileArray[k, 2],
+                            X = fileArray[k, 0],
+                            Y = fileArray[k, 1],
                             //UTM = Convert.ToString(c.UTM),
-                            Z = fileArray[k, 3]
+                            Z = fileArray[k, 2]
                             
                     });
                     }
@@ -294,16 +303,16 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 2] == selectedValue || selectedValue == "ALL")
+                if (fileArray[k, 1] == selectedValue || selectedValue == "ALL")
                 {
-                    if (fileArray[k, 1] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                    if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                     {
                         dataGrids.Add(new GridData()
                         {
                             line = lines,
-                            X = fileArray[k, 1],
-                            Y = fileArray[k, 2],
-                            Z = fileArray[k, 3]
+                            X = fileArray[k, 0],
+                            Y = fileArray[k, 1],
+                            Z = fileArray[k, 2]
                         });
                     }
                        
@@ -900,9 +909,13 @@ namespace ModResConverter
             
         }
 
-        private int datFileOperation(int a, string filelength, int countline)
+        private int datFileOperation(int a, string filelength, int countline, int totalLine)
         {
-            //Console.WriteLine(a);
+            Console.WriteLine("a:" +  a);
+            Console.WriteLine("filelength:" + filelength);
+            Console.WriteLine("countline:" + countline);
+            fileArray = new string[totalLine, 3];
+
             try
             {
                 StreamReader objInputs = new StreamReader(filelength, System.Text.Encoding.Default);
@@ -932,13 +945,13 @@ namespace ModResConverter
                     //Console.WriteLine(s);
                     if (skip != 0)
                     {
-                        int j = 0;
+                        int j = -1;
                         string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
                         foreach (string p in space)
                         {
-                            //Console.WriteLine(i + "/" + p);
+                            
                             string p_replace = p.Replace("\"", "");
-                            if (j == 1)
+                            if (j == 0)
                             {
                                 if (arrayXaxis.Contains(p) == false && p_replace != "X-location,Z-location,Resistivity")
                                 {
@@ -946,25 +959,29 @@ namespace ModResConverter
                                     TempList.Add(p);
 
                                 }
+                                //Console.WriteLine(i + "/" + j + "/" + p);
                                 arrayXaxis[i] = p;
-                                fileArray[i, j] = p;
+                                //fileArray[i, j] = p;
+                                fileArray[i, j] = "test" + i;
+                                Console.WriteLine(fileArray[i, j]);
+
                                 j++;
                             }
-                            else if (j == 2)
+                            else if (j == 1)
                             {
                                 if (arrayYaxis.Contains(p) == false)
                                 {
                                     comboY.Items.Add(p);
                                 }
                                 arrayYaxis[i] = p;
-                                fileArray[i, j] = p;
+                                //fileArray[i, j] = p;
                                 j++;
                             }
-                            else if (j == 3)
+                            else if (j == 2)
                             {
                                 //Console.WriteLine(p);
-                                fileArray[i, j] = p;
-                                j = 0;
+                                //fileArray[i, j] = p;
+                                j = -1;
                             }
                             else
                             {
@@ -976,7 +993,7 @@ namespace ModResConverter
                     i++;
 
                 }
-                countline = i;
+                countline = i - 1;
 
             }
             catch (IOException)
@@ -1013,7 +1030,7 @@ namespace ModResConverter
                 for (int n = 2; n < nonEmptyDataRows; n++)
                 {
                     m = countline + n;
-                    Console.WriteLine(m);
+                    //Console.WriteLine(m);
                     //getdata
                     String x = ws.Cell(n, 1).GetString();
                     String y = ws.Cell(n, 2).GetString();
@@ -1028,7 +1045,7 @@ namespace ModResConverter
                         //Console.WriteLine(x);
                     }
                     arrayXaxis[m] = x;
-                    fileArray[m, 1] = x;
+                    fileArray[m,0] = x;
                    //Console.WriteLine(n);
 
                     if (arrayYaxis.Contains(y) == false)
@@ -1036,8 +1053,8 @@ namespace ModResConverter
                         comboY.Items.Add(y);
                     }
                     arrayYaxis[m] = y;
-                    fileArray[m, 2] = y;
-                    fileArray[m, 3] = z;
+                    fileArray[m, 1] = y;
+                    fileArray[m, 2] = z;
                     //Boolean cellDouble = (Boolean)cellBoolean.Value;
                     //Console.WriteLine(x);
                 }
@@ -1057,6 +1074,16 @@ namespace ModResConverter
             dataSP = null;
             dataGrid1.ItemsSource = null;
             //dataGrids.Clear();
+
+            fileArray = new string[2053, 3];
+            for(int i = 0; i < 2053; i++)
+            {
+                for(int j = 0; j < 3; j++)
+                {
+                    fileArray[i, j] = "test" + i;
+                    Console.WriteLine(fileArray[i, j]);
+                }
+            }
         }
     }
 }
