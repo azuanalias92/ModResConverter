@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1080">
     
-    <Grid Background="CadetBlue" Margin="0,0,0,0">
+    <Grid Background="CornflowerBlue" Margin="0,0,0,0">
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
@@ -22,14 +22,14 @@
         <!--<Button x:Name="btn1" Click="btn1_Click" Content="Upload" HorizontalAlignment="Left" Margin="500,50,0,0" VerticalAlignment="Top" Width="125" Height="25" />-->
         <ListBox x:Name="path1" HorizontalAlignment="Left" Height="125" Margin="50,50,0,0"   VerticalAlignment="Top" Width="800"/>
         <!--<TextBox x:Name="box1" HorizontalAlignment="Left" Height="250" Margin="50,100,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="400" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>-->
-        <ComboBox x:Name="comboX"  HorizontalAlignment="Left" Margin="900,50,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboX_SelectionChanged"/>
+        <ComboBox x:Name="comboX"  HorizontalAlignment="Left" Margin="900,50,50,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboX_SelectionChanged"/>
         <!--<Button x:Name="export" Content="Export" HorizontalAlignment="Left" Margin="500,430,0,0" VerticalAlignment="Top" Width="120" Click="export_Click"/>-->
         <Label Content="File Path" HorizontalAlignment="Left" Margin="50,20,0,0" VerticalAlignment="Top" Width="100" Foreground="White"/>
         <Label Content="X-location" HorizontalAlignment="Left" Margin="900,20,0,0" VerticalAlignment="Top"  Foreground="White"/>
         <Label Content="Y-location" HorizontalAlignment="Left" Margin="900,75,0,0" VerticalAlignment="Top"  Foreground="White"/>
-        <ComboBox x:Name="comboY"  HorizontalAlignment="Left" Margin="900,100,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboY_SelectionChanged"/>
+        <ComboBox x:Name="comboY"  HorizontalAlignment="Left" Margin="900,100,50,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboY_SelectionChanged"/>
         <Label Content="Data" HorizontalAlignment="Left" Margin="50,200,0,0" VerticalAlignment="Top" Width="100" Foreground="White"/>
-        <DataGrid x:Name="dataGrid1" AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_OnAutoGeneratingColumn" HorizontalAlignment="Left" Height="250" Margin="50,225,50,50"  VerticalAlignment="Top" Width="950" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Padding="0">
+        <DataGrid x:Name="dataGrid1" AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_OnAutoGeneratingColumn" HorizontalAlignment="Left" Height="250" Margin="50,225,50,50"  VerticalAlignment="Top" Width="1000" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Padding="0">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="10"/>
@@ -46,7 +46,7 @@
             </DataGrid.CellStyle>
         </DataGrid>
         <Label Content="Space" HorizontalAlignment="Left" Margin="900,125,0,0" VerticalAlignment="Top"  Foreground="White"/>
-        <ComboBox x:Name="comboSpace"  HorizontalAlignment="Left" Margin="900,150,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboSpace_SelectionChanged"/>
-        <Button x:Name="clearBtn" Content="Reset" HorizontalAlignment="Left" Margin="950,530,0,0" VerticalAlignment="Top" Width="75" Background="White" FontSize="16" Click="clearBtn_Click"/>
+        <ComboBox x:Name="comboSpace"  HorizontalAlignment="Left" Margin="900,150,50,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboSpace_SelectionChanged"/>
+        <Button x:Name="clearBtn" Content="Reset" HorizontalAlignment="Left" Margin="945,515,0,0" VerticalAlignment="Top" Width="70" Background="White" FontSize="16" Click="clearBtn_Click"/>
     </Grid>
 </Window>

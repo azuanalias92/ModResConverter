@@ -9,6 +9,7 @@ using ClosedXML.Excel;
 using Microsoft.Win32;
 using CoordinateSharp;
 
+
 namespace ModResConverter
 {
     /// <summary>
@@ -38,9 +39,7 @@ namespace ModResConverter
             //export.IsEnabled = false;
             comboX.IsEnabled = false;
             comboY.IsEnabled = false;
-            comboSpace.IsEnabled = false;
-
-            
+            comboSpace.IsEnabled = false; 
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
@@ -84,7 +83,6 @@ namespace ModResConverter
                 }
                 else
                 {
-                    
                     comboSpace.IsEnabled = false;
                     openFile();
                 }           
@@ -183,6 +181,13 @@ namespace ModResConverter
             catch
             {
                 MessageBox.Show("Please close excel file");
+                comboX.Items.Clear();
+                comboY.Items.Clear();
+                comboSpace.Items.Clear();
+                path1.Items.Clear();
+                dataGrids = null;
+                dataSP = null;
+                dataGrid1.ItemsSource = null;
 
             }
         }
@@ -191,42 +196,88 @@ namespace ModResConverter
         {
             //looping for length of each file
             int a = 1;
-            arrayYaxis = new string[1000];
-            arrayXaxis = new string[1000];
-            //
             TempList = new List<string>();
             
             int totalLine = 0;
             int countLine = 0;
+            bool fileLock = false;
             foreach (string filelength in fileDialog.FileNames)
             {
-                totalLine += File.ReadLines(filelength).Count();
+                FileInfo fi1 = new FileInfo(filelength);
+                path1.Items.Add(filelength);
+
+                if (IsFileLocked(fi1))
+                {
+                    MessageBox.Show("Close this file " + filelength);
+                    comboX.Items.Clear();
+                    comboY.Items.Clear();
+                    comboSpace.Items.Clear();
+                    path1.Items.Clear();
+                    dataGrids = null;
+                    dataSP = null;
+                    dataGrid1.ItemsSource = null;
+                    fileLock = true;
+                }
+                else
+                {
+                    string fileType = Path.GetExtension(filelength);
+
+                    if (!fileLock)
+                    {
+                        if (fileType == ".dat")
+                        {
+                            totalLine += File.ReadLines(filelength).Count();
+                            //Console.WriteLine("total Line:" + totalLine);
+                        }
+                        else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
+                        {
+                            using (var excelWorkbook = new XLWorkbook(filelength))
+                            {
+                                var ws = excelWorkbook.Worksheet(1);
+                                var nonEmptyDataRows = ws.RowsUsed().Count();
+
+                                totalLine += nonEmptyDataRows;
+                                //Console.WriteLine("total Line:" + totalLine);
+                            }
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
+                        }
+                    }
+                    
+                }
             }
+
             totalLine = totalLine + 1000;
-            Console.WriteLine("total Line:" + totalLine);
-            //fileArray = new string[countLines, 3];
+            //Console.WriteLine("total Line:" + totalLine);
+            fileArray = new string[totalLine, 3];
+            arrayYaxis = new string[totalLine];
+            arrayXaxis = new string[totalLine];
 
             foreach (string filelength in fileDialog.FileNames)
             {
                 string fileType = Path.GetExtension(filelength);
-                
 
-                if (fileType == ".dat")
+                if (!fileLock)
                 {
-                    countLine =  datFileOperation(a, filelength, countLine, totalLine);
-                }
-                else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
-                {
-                   // Console.WriteLine(countLine);
-                    countLine =  excelFileOperation(a, filelength, countLine);
-                    
-                }
-                else
-                {
-                    MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
+                    if (fileType == ".dat")
+                    {
+                        countLine = datFileOperation(a, filelength, countLine, totalLine);
+                    }
+                    else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
+                    {
+                        // Console.WriteLine(countLine);
+                        countLine = excelFileOperation(a, filelength, countLine);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
+                    }
                 }
                 a++;
-                path1.Items.Add(filelength);
+                
             }
 
             //Sort Value ComboBox
@@ -379,6 +430,9 @@ namespace ModResConverter
                                     string x_ = dataRow.Cell(15).GetValue<string>();
                                     string y_ = dataRow.Cell(16).GetValue<string>();
                                     string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                    //convert to utm
+                                    Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                    string utm = c.UTM.ToString();
 
                                     dataSP.Add(new GridSP()
                                     {
@@ -399,7 +453,8 @@ namespace ModResConverter
                                         elevation = elevation_,
                                         x = x_,
                                         y = y_,
-                                        remarks = remarks_
+                                        remarks = remarks_,
+                                        UTM = utm
 
 
                                     });
@@ -427,6 +482,9 @@ namespace ModResConverter
                                 string x_ = dataRow.Cell(15).GetValue<string>();
                                 string y_ = dataRow.Cell(16).GetValue<string>();
                                 string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                //convert to utm
+                                Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                string utm = c.UTM.ToString();
 
                                 dataSP.Add(new GridSP()
                                 {
@@ -447,7 +505,8 @@ namespace ModResConverter
                                     elevation = elevation_,
                                     x = x_,
                                     y = y_,
-                                    remarks = remarks_
+                                    remarks = remarks_,
+                                    UTM = utm
 
 
                                 });
@@ -911,10 +970,10 @@ namespace ModResConverter
 
         private int datFileOperation(int a, string filelength, int countline, int totalLine)
         {
-            Console.WriteLine("a:" +  a);
-            Console.WriteLine("filelength:" + filelength);
-            Console.WriteLine("countline:" + countline);
-            fileArray = new string[totalLine, 3];
+            //Console.WriteLine("a:" +  a);
+            //Console.WriteLine("filelength:" + filelength);
+            //Console.WriteLine("countline:" + countline);
+            //fileArray = new string[totalLine, 3];
 
             try
             {
@@ -923,8 +982,8 @@ namespace ModResConverter
                 string[] splits = System.Text.RegularExpressions.Regex.Split(contents, "\\r+", RegexOptions.None);
                 lengthArray = lengthArray + splits.Length;
                 coordinateArray[a] = lengthArray;
-                a++;
-                //Console.WriteLine(lengthArray);
+                //a++;
+                //Console.WriteLine(splits);
 
                 //default value
                 if (!comboX.Items.Contains("ALL"))
@@ -936,7 +995,6 @@ namespace ModResConverter
                     comboY.Items.Add("ALL");
                 }
 
-                
                 int skip = 0, i = countline;
 
                 foreach (string s in splits)
@@ -949,21 +1007,20 @@ namespace ModResConverter
                         string[] space = System.Text.RegularExpressions.Regex.Split(s, "\\s+", RegexOptions.None);
                         foreach (string p in space)
                         {
-                            
+
                             string p_replace = p.Replace("\"", "");
                             if (j == 0)
                             {
                                 if (arrayXaxis.Contains(p) == false && p_replace != "X-location,Z-location,Resistivity")
                                 {
-                                    //comboX.Items.Add(p);
+                                    comboX.Items.Add(p);
                                     TempList.Add(p);
 
                                 }
                                 //Console.WriteLine(i + "/" + j + "/" + p);
                                 arrayXaxis[i] = p;
-                                //fileArray[i, j] = p;
-                                fileArray[i, j] = "test" + i;
-                                Console.WriteLine(fileArray[i, j]);
+                                fileArray[i, j] = p;
+                                //Console.WriteLine(fileArray[i, j]);
 
                                 j++;
                             }
@@ -974,13 +1031,13 @@ namespace ModResConverter
                                     comboY.Items.Add(p);
                                 }
                                 arrayYaxis[i] = p;
-                                //fileArray[i, j] = p;
+                                fileArray[i, j] = p;
                                 j++;
                             }
                             else if (j == 2)
                             {
                                 //Console.WriteLine(p);
-                                //fileArray[i, j] = p;
+                                fileArray[i, j] = p;
                                 j = -1;
                             }
                             else
@@ -1027,9 +1084,11 @@ namespace ModResConverter
                     comboY.Items.Add("ALL");
                 }
 
+                int counter = 0;
                 for (int n = 2; n < nonEmptyDataRows; n++)
                 {
-                    m = countline + n;
+                    m = countline + counter;
+                    counter++;
                     //Console.WriteLine(m);
                     //getdata
                     String x = ws.Cell(n, 1).GetString();
@@ -1045,8 +1104,8 @@ namespace ModResConverter
                         //Console.WriteLine(x);
                     }
                     arrayXaxis[m] = x;
-                    fileArray[m,0] = x;
-                   //Console.WriteLine(n);
+                    fileArray[m, 0] = x;
+                    //Console.WriteLine(n);
 
                     if (arrayYaxis.Contains(y) == false)
                     {
@@ -1060,6 +1119,7 @@ namespace ModResConverter
                 }
 
                 countline = row;
+                
             }
             return countline;
         }
@@ -1074,16 +1134,32 @@ namespace ModResConverter
             dataSP = null;
             dataGrid1.ItemsSource = null;
             //dataGrids.Clear();
+        }
 
-            fileArray = new string[2053, 3];
-            for(int i = 0; i < 2053; i++)
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
             {
-                for(int j = 0; j < 3; j++)
-                {
-                    fileArray[i, j] = "test" + i;
-                    Console.WriteLine(fileArray[i, j]);
-                }
+                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
             }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
         }
     }
 }
