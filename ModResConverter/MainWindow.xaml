@@ -48,5 +48,7 @@
         <Label Content="Space" HorizontalAlignment="Left" Margin="900,125,0,0" VerticalAlignment="Top"  Foreground="White"/>
         <ComboBox x:Name="comboSpace"  HorizontalAlignment="Left" Margin="900,150,50,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboSpace_SelectionChanged"/>
         <Button x:Name="clearBtn" Content="Reset" HorizontalAlignment="Left" Margin="945,515,0,0" VerticalAlignment="Top" Width="70" Background="White" FontSize="16" Click="clearBtn_Click"/>
+        <Label Content="SP Mode :" HorizontalAlignment="Left" Margin="50,510,0,0" VerticalAlignment="Top"  Foreground="White" Width="75" />
+        <Button x:Name ="toggle_btn" Content="OFF" HorizontalAlignment="Left" Margin="120,515,0,0" VerticalAlignment="Top" Width="75" Background="PaleVioletRed" Click="sp_Click"/>
     </Grid>
 </Window>

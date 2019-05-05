@@ -55,3 +55,4 @@ C:\Dev\ModResConverter\ModResConverter\ModResConverter\obj\Debug\ModResConverter
 C:\Dev\ModResConverter\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csproj.CopyComplete
 C:\Dev\ModResConverter\ModResConverter\ModResConverter\obj\Debug\ModResConverter.exe
 C:\Dev\ModResConverter\ModResConverter\ModResConverter\obj\Debug\ModResConverter.pdb
+C:\Dev\ModResConverter\ModResConverter\ModResConverter\obj\Debug\ModResConverter.csprojAssemblyReference.cache

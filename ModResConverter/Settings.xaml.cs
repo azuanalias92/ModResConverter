@@ -55,6 +55,8 @@ namespace ModResConverter
             x_cb.IsChecked = Properties.Settings.Default.X;
             y_cb.IsChecked = Properties.Settings.Default.Y;
             remark_cb.IsChecked = Properties.Settings.Default.Remarks;
+            space_tb.Text = Properties.Settings.Default.Space.ToString();
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -183,9 +185,12 @@ namespace ModResConverter
 
         private void CheckBoxChanged16(object sender, RoutedEventArgs e)
             {
-
-               
                 Properties.Settings.Default.Remarks = (bool)remark_cb.IsChecked;
             }
+
+        private void textChangedEventHandler(object sender, TextChangedEventArgs e)
+        {
+            Properties.Settings.Default.Space = Int32.Parse(space_tb.Text);
         }
+    }
 }
