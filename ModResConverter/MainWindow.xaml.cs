@@ -97,6 +97,15 @@ namespace ModResConverter
             int maxStation = 0;
             path1.Items.Add(fileDialog.FileName);
 
+            if (!comboX.Items.Contains("ALL"))
+            {
+                comboX.Items.Add("ALL");
+            }
+            if (!comboY.Items.Contains("ALL"))
+            {
+                comboY.Items.Add("ALL");
+            }
+
             try
             {
                 using (var excelWorkbook = new XLWorkbook(fileName))
@@ -277,9 +286,18 @@ namespace ModResConverter
 
             String selectedValueX = (String)comboX.SelectedValue;
             String selectedValueY = (String)comboY.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
             if (Properties.Settings.Default.SP_Setting)
             {
-                comboXSP(selectedValueX, selectedValueY);
+                comboXSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
             {
@@ -287,7 +305,7 @@ namespace ModResConverter
             }
         }
 
-        private void comboXSP(string selectedValueX, string selectedValueY)
+        private void comboXSP(string selectedValueX, string selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
             string fileName = fileDialog.FileName;
@@ -297,6 +315,8 @@ namespace ModResConverter
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
                     int counter = 0;
+                    int n = 1;
+
                     foreach (var dataRow in nonEmptyDataRows)
                     {
                         string x = dataRow.Cell(15).GetValue<string>();
@@ -304,59 +324,123 @@ namespace ModResConverter
 
                         if (counter > 0)
                         {
-                           if (x == selectedValueX)
+                           if (x == selectedValueX || selectedValueX == "ALL")
                             {
                                 if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                                 {
-
-                                    string serial_ = dataRow.Cell(1).GetValue<string>();
-                                    string date_ = dataRow.Cell(2).GetValue<string>();
-                                    string line_ = dataRow.Cell(3).GetValue<string>();
-                                    string station_ = dataRow.Cell(4).GetValue<string>();
-                                    string north_ = dataRow.Cell(5).GetValue<string>();
-                                    string east_ = dataRow.Cell(6).GetValue<string>();
-                                    string stime_ = dataRow.Cell(7).GetValue<string>();
-                                    string mtime_ = dataRow.Cell(8).GetValue<string>();
-                                    string reading1_ = dataRow.Cell(9).GetValue<string>();
-                                    string reading2_ = dataRow.Cell(10).GetValue<string>();
-                                    string reading3_ = dataRow.Cell(11).GetValue<string>();
-                                    string reading4_ = dataRow.Cell(12).GetValue<string>();
-                                    float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
-                                    string average_ = string.Format("{0:N3}", average_num);
-                                    string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                    string x_ = x;
-                                    string y_ = y;
-                                    string remarks_ = dataRow.Cell(17).GetValue<string>();
-                                    //Console.WriteLine(x + " | " + north_);
-                                    //convert to utm
-
-                                    if (!string.IsNullOrEmpty(north_) || !string.IsNullOrEmpty(east_))
+                                    string station = dataRow.Cell(4).GetValue<string>();
+                                    int valueOut = 0;
+                                    if (int.TryParse(station, out valueOut))
                                     {
-                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2019, 6, 5, 10, 10, 0));
-                                        string utm = c.UTM.ToString();
-
-                                        dataSP.Add(new GridSP()
+                                        //Console.WriteLine(Convert.ToInt32(station));
+                                        if (Convert.ToInt32(station) != 0)
                                         {
+                                            if (Convert.ToInt32(station) == (selectedValueSpace * n))
+                                            {
+                                                //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
+                                                string serial_ = dataRow.Cell(1).GetValue<string>();
+                                                string date_ = dataRow.Cell(2).GetValue<string>();
+                                                string line_ = dataRow.Cell(3).GetValue<string>();
+                                                string station_ = dataRow.Cell(4).GetValue<string>();
+                                                string north_ = dataRow.Cell(5).GetValue<string>();
+                                                string east_ = dataRow.Cell(6).GetValue<string>();
+                                                string stime_ = dataRow.Cell(7).GetValue<string>();
+                                                string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                                string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                                string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                                string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                                string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                                float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                                string average_ = string.Format("{0:N3}", average_num);
+                                                string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                                string x_ = dataRow.Cell(15).GetValue<string>();
+                                                string y_ = dataRow.Cell(16).GetValue<string>();
+                                                string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                                //convert to utm
+                                                Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                                string utm = c.UTM.ToString();
 
-                                            serial = serial_,
-                                            date = date_,
-                                            line = line_,
-                                            station = station_,
-                                            north = north_,
-                                            east = east_,
-                                            second_time = stime_,
-                                            minute_time = mtime_,
-                                            reading_1 = reading1_,
-                                            reading_2 = reading2_,
-                                            reading_3 = reading3_,
-                                            reading_4 = reading4_,
-                                            average = average_,
-                                            elevation = elevation_,
-                                            x = x_,
-                                            y = y_,
-                                            remarks = remarks_,
-                                            UTM = utm
-                                        });
+                                                dataSP.Add(new GridSP()
+                                                {
+
+                                                    serial = serial_,
+                                                    date = date_,
+                                                    line = line_,
+                                                    station = station_,
+                                                    north = north_,
+                                                    east = east_,
+                                                    second_time = stime_,
+                                                    minute_time = mtime_,
+                                                    reading_1 = reading1_,
+                                                    reading_2 = reading2_,
+                                                    reading_3 = reading3_,
+                                                    reading_4 = reading4_,
+                                                    average = average_,
+                                                    elevation = elevation_,
+                                                    x = x_,
+                                                    y = y_,
+                                                    remarks = remarks_,
+                                                    UTM = utm
+
+
+                                                });
+                                                n++;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            string serial_ = dataRow.Cell(1).GetValue<string>();
+                                            string date_ = dataRow.Cell(2).GetValue<string>();
+                                            string line_ = dataRow.Cell(3).GetValue<string>();
+                                            string station_ = dataRow.Cell(4).GetValue<string>();
+                                            string north_ = dataRow.Cell(5).GetValue<string>();
+                                            string east_ = dataRow.Cell(6).GetValue<string>();
+                                            string stime_ = dataRow.Cell(7).GetValue<string>();
+                                            string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                            string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                            string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                            string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                            string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                            float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                            string average_ = string.Format("{0:N3}", average_num);
+                                            string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                            string x_ = dataRow.Cell(15).GetValue<string>();
+                                            string y_ = dataRow.Cell(16).GetValue<string>();
+                                            string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                            //convert to utm
+                                            Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                            string utm = c.UTM.ToString();
+
+                                            dataSP.Add(new GridSP()
+                                            {
+
+                                                serial = serial_,
+                                                date = date_,
+                                                line = line_,
+                                                station = station_,
+                                                north = north_,
+                                                east = east_,
+                                                second_time = stime_,
+                                                minute_time = mtime_,
+                                                reading_1 = reading1_,
+                                                reading_2 = reading2_,
+                                                reading_3 = reading3_,
+                                                reading_4 = reading4_,
+                                                average = average_,
+                                                elevation = elevation_,
+                                                x = x_,
+                                                y = y_,
+                                                remarks = remarks_,
+                                                UTM = utm
+
+
+                                            });
+                                            n++;
+
+                                            n = 1; //reset for line
+                                        }
+
                                     }
                                 }
 
@@ -416,21 +500,27 @@ namespace ModResConverter
         {
             String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
 
             if (Properties.Settings.Default.SP_Setting)
             {
-                comboYSP(selectedValueX, selectedValueY);
+                comboYSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
             {
                 comboYRes(selectedValueX, selectedValueY);
             }
-
-            
-
         }
 
-        private void comboYSP(string selectedValueX, string selectedValueY)
+        private void comboYSP(string selectedValueX, string selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
             string fileName = fileDialog.FileName;
@@ -440,6 +530,7 @@ namespace ModResConverter
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
                     int counter = 0;
+                    int n = 1;
                     foreach (var dataRow in nonEmptyDataRows)
                     {
                         string x = dataRow.Cell(15).GetValue<string>();
@@ -447,59 +538,124 @@ namespace ModResConverter
 
                         if (counter > 0)
                         {
-                            if (y == selectedValueY)
+                            if (y == selectedValueY  || selectedValueY == "ALL")
                             {
                                 if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                                 {
 
-                                    string serial_ = dataRow.Cell(1).GetValue<string>();
-                                    string date_ = dataRow.Cell(2).GetValue<string>();
-                                    string line_ = dataRow.Cell(3).GetValue<string>();
-                                    string station_ = dataRow.Cell(4).GetValue<string>();
-                                    string north_ = dataRow.Cell(5).GetValue<string>();
-                                    string east_ = dataRow.Cell(6).GetValue<string>();
-                                    string stime_ = dataRow.Cell(7).GetValue<string>();
-                                    string mtime_ = dataRow.Cell(8).GetValue<string>();
-                                    string reading1_ = dataRow.Cell(9).GetValue<string>();
-                                    string reading2_ = dataRow.Cell(10).GetValue<string>();
-                                    string reading3_ = dataRow.Cell(11).GetValue<string>();
-                                    string reading4_ = dataRow.Cell(12).GetValue<string>();
-                                    float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
-                                    string average_ = string.Format("{0:N3}", average_num);
-                                    string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                    string x_ = x;
-                                    string y_ = y;
-                                    string remarks_ = dataRow.Cell(17).GetValue<string>();
-                                    //Console.WriteLine(x + " | " + north_);
-                                    //convert to utm
-
-                                    if (!string.IsNullOrEmpty(north_) || !string.IsNullOrEmpty(east_))
+                                    string station = dataRow.Cell(4).GetValue<string>();
+                                    int valueOut = 0;
+                                    if (int.TryParse(station, out valueOut))
                                     {
-                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2019, 6, 5, 10, 10, 0));
-                                        string utm = c.UTM.ToString();
-
-                                        dataSP.Add(new GridSP()
+                                        //Console.WriteLine(Convert.ToInt32(station));
+                                        if (Convert.ToInt32(station) != 0)
                                         {
+                                            if (Convert.ToInt32(station) == (selectedValueSpace * n))
+                                            {
+                                                //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
+                                                string serial_ = dataRow.Cell(1).GetValue<string>();
+                                                string date_ = dataRow.Cell(2).GetValue<string>();
+                                                string line_ = dataRow.Cell(3).GetValue<string>();
+                                                string station_ = dataRow.Cell(4).GetValue<string>();
+                                                string north_ = dataRow.Cell(5).GetValue<string>();
+                                                string east_ = dataRow.Cell(6).GetValue<string>();
+                                                string stime_ = dataRow.Cell(7).GetValue<string>();
+                                                string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                                string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                                string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                                string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                                string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                                float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                                string average_ = string.Format("{0:N3}", average_num);
+                                                string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                                string x_ = dataRow.Cell(15).GetValue<string>();
+                                                string y_ = dataRow.Cell(16).GetValue<string>();
+                                                string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                                //convert to utm
+                                                Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                                string utm = c.UTM.ToString();
 
-                                            serial = serial_,
-                                            date = date_,
-                                            line = line_,
-                                            station = station_,
-                                            north = north_,
-                                            east = east_,
-                                            second_time = stime_,
-                                            minute_time = mtime_,
-                                            reading_1 = reading1_,
-                                            reading_2 = reading2_,
-                                            reading_3 = reading3_,
-                                            reading_4 = reading4_,
-                                            average = average_,
-                                            elevation = elevation_,
-                                            x = x_,
-                                            y = y_,
-                                            remarks = remarks_,
-                                            UTM = utm
-                                        });
+                                                dataSP.Add(new GridSP()
+                                                {
+
+                                                    serial = serial_,
+                                                    date = date_,
+                                                    line = line_,
+                                                    station = station_,
+                                                    north = north_,
+                                                    east = east_,
+                                                    second_time = stime_,
+                                                    minute_time = mtime_,
+                                                    reading_1 = reading1_,
+                                                    reading_2 = reading2_,
+                                                    reading_3 = reading3_,
+                                                    reading_4 = reading4_,
+                                                    average = average_,
+                                                    elevation = elevation_,
+                                                    x = x_,
+                                                    y = y_,
+                                                    remarks = remarks_,
+                                                    UTM = utm
+
+
+                                                });
+                                                n++;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            string serial_ = dataRow.Cell(1).GetValue<string>();
+                                            string date_ = dataRow.Cell(2).GetValue<string>();
+                                            string line_ = dataRow.Cell(3).GetValue<string>();
+                                            string station_ = dataRow.Cell(4).GetValue<string>();
+                                            string north_ = dataRow.Cell(5).GetValue<string>();
+                                            string east_ = dataRow.Cell(6).GetValue<string>();
+                                            string stime_ = dataRow.Cell(7).GetValue<string>();
+                                            string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                            string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                            string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                            string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                            string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                            float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                            string average_ = string.Format("{0:N3}", average_num);
+                                            string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                            string x_ = dataRow.Cell(15).GetValue<string>();
+                                            string y_ = dataRow.Cell(16).GetValue<string>();
+                                            string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                            //convert to utm
+                                            Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                            string utm = c.UTM.ToString();
+
+                                            dataSP.Add(new GridSP()
+                                            {
+
+                                                serial = serial_,
+                                                date = date_,
+                                                line = line_,
+                                                station = station_,
+                                                north = north_,
+                                                east = east_,
+                                                second_time = stime_,
+                                                minute_time = mtime_,
+                                                reading_1 = reading1_,
+                                                reading_2 = reading2_,
+                                                reading_3 = reading3_,
+                                                reading_4 = reading4_,
+                                                average = average_,
+                                                elevation = elevation_,
+                                                x = x_,
+                                                y = y_,
+                                                remarks = remarks_,
+                                                UTM = utm
+
+
+                                            });
+                                            n++;
+
+                                            n = 1; //reset for line
+                                        }
+
                                     }
                                 }
 
@@ -554,30 +710,32 @@ namespace ModResConverter
 
         private void comboSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int selectedValue;
+            String selectedValueY = (String)comboY.SelectedValue;
+            String selectedValueX = (String)comboX.SelectedValue;
+            int selectedValueSpace;
             try
             {
-                selectedValue = (int)comboSpace.SelectedValue;
+                selectedValueSpace = (int)comboSpace.SelectedValue;
             }
             catch
             {
-                selectedValue = 1;
+                selectedValueSpace = 1;
             }
 
             if (Properties.Settings.Default.SP_Setting)
             {
-                comboSpaceSP(selectedValue);
+                comboSpaceSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
             {
-                comboSpaceRes(selectedValue);
+                comboSpaceRes(selectedValueSpace);
             }
         }
 
-        private void comboSpaceSP(int selectedValue)
+        private void comboSpaceSP(String selectedValueX, String selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
-            string select = selectedValue.ToString();
+            string select = selectedValueSpace.ToString();
             string fileName = fileDialog.FileName;
             try
             {
@@ -589,121 +747,127 @@ namespace ModResConverter
                     foreach (var dataRow in nonEmptyDataRows)
                     {
                         string station = dataRow.Cell(4).GetValue<string>();
+                        string x = dataRow.Cell(15).GetValue<string>();
+                        string y = dataRow.Cell(16).GetValue<string>();
                         int valueOut = 0;
-                        if (int.TryParse(station, out valueOut))
+
+                        if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                         {
-                            //Console.WriteLine(Convert.ToInt32(station));
-                            if (Convert.ToInt32(station) != 0)
+                            if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                             {
-
-
-                                if (Convert.ToInt32(station) == (selectedValue * n))
+                                if (int.TryParse(station, out valueOut))
                                 {
-
-                                    //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
-                                    string serial_ = dataRow.Cell(1).GetValue<string>();
-                                    string date_ = dataRow.Cell(2).GetValue<string>();
-                                    string line_ = dataRow.Cell(3).GetValue<string>();
-                                    string station_ = dataRow.Cell(4).GetValue<string>();
-                                    string north_ = dataRow.Cell(5).GetValue<string>();
-                                    string east_ = dataRow.Cell(6).GetValue<string>();
-                                    string stime_ = dataRow.Cell(7).GetValue<string>();
-                                    string mtime_ = dataRow.Cell(8).GetValue<string>();
-                                    string reading1_ = dataRow.Cell(9).GetValue<string>();
-                                    string reading2_ = dataRow.Cell(10).GetValue<string>();
-                                    string reading3_ = dataRow.Cell(11).GetValue<string>();
-                                    string reading4_ = dataRow.Cell(12).GetValue<string>();
-                                    float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
-                                    string average_ = string.Format("{0:N3}", average_num);
-                                    string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                    string x_ = dataRow.Cell(15).GetValue<string>();
-                                    string y_ = dataRow.Cell(16).GetValue<string>();
-                                    string remarks_ = dataRow.Cell(17).GetValue<string>();
-                                    //convert to utm
-                                    Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
-                                    string utm = c.UTM.ToString();
-
-                                    dataSP.Add(new GridSP()
+                                    //Console.WriteLine(Convert.ToInt32(station));
+                                    if (Convert.ToInt32(station) != 0)
                                     {
+                                        if (Convert.ToInt32(station) == (selectedValueSpace * n))
+                                        {
+                                            //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
+                                            string serial_ = dataRow.Cell(1).GetValue<string>();
+                                            string date_ = dataRow.Cell(2).GetValue<string>();
+                                            string line_ = dataRow.Cell(3).GetValue<string>();
+                                            string station_ = dataRow.Cell(4).GetValue<string>();
+                                            string north_ = dataRow.Cell(5).GetValue<string>();
+                                            string east_ = dataRow.Cell(6).GetValue<string>();
+                                            string stime_ = dataRow.Cell(7).GetValue<string>();
+                                            string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                            string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                            string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                            string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                            string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                            float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                            string average_ = string.Format("{0:N3}", average_num);
+                                            string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                            string x_ = dataRow.Cell(15).GetValue<string>();
+                                            string y_ = dataRow.Cell(16).GetValue<string>();
+                                            string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                            //convert to utm
+                                            Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                            string utm = c.UTM.ToString();
 
-                                        serial = serial_,
-                                        date = date_,
-                                        line = line_,
-                                        station = station_,
-                                        north = north_,
-                                        east = east_,
-                                        second_time = stime_,
-                                        minute_time = mtime_,
-                                        reading_1 = reading1_,
-                                        reading_2 = reading2_,
-                                        reading_3 = reading3_,
-                                        reading_4 = reading4_,
-                                        average = average_,
-                                        elevation = elevation_,
-                                        x = x_,
-                                        y = y_,
-                                        remarks = remarks_,
-                                        UTM = utm
+                                            dataSP.Add(new GridSP()
+                                            {
+
+                                                serial = serial_,
+                                                date = date_,
+                                                line = line_,
+                                                station = station_,
+                                                north = north_,
+                                                east = east_,
+                                                second_time = stime_,
+                                                minute_time = mtime_,
+                                                reading_1 = reading1_,
+                                                reading_2 = reading2_,
+                                                reading_3 = reading3_,
+                                                reading_4 = reading4_,
+                                                average = average_,
+                                                elevation = elevation_,
+                                                x = x_,
+                                                y = y_,
+                                                remarks = remarks_,
+                                                UTM = utm
 
 
-                                    });
-                                    n++;
+                                            });
+                                            n++;
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        string serial_ = dataRow.Cell(1).GetValue<string>();
+                                        string date_ = dataRow.Cell(2).GetValue<string>();
+                                        string line_ = dataRow.Cell(3).GetValue<string>();
+                                        string station_ = dataRow.Cell(4).GetValue<string>();
+                                        string north_ = dataRow.Cell(5).GetValue<string>();
+                                        string east_ = dataRow.Cell(6).GetValue<string>();
+                                        string stime_ = dataRow.Cell(7).GetValue<string>();
+                                        string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                        string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                        string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                        string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                        string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                        float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                        string average_ = string.Format("{0:N3}", average_num);
+                                        string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                        string x_ = dataRow.Cell(15).GetValue<string>();
+                                        string y_ = dataRow.Cell(16).GetValue<string>();
+                                        string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                        //convert to utm
+                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                        string utm = c.UTM.ToString();
+
+                                        dataSP.Add(new GridSP()
+                                        {
+
+                                            serial = serial_,
+                                            date = date_,
+                                            line = line_,
+                                            station = station_,
+                                            north = north_,
+                                            east = east_,
+                                            second_time = stime_,
+                                            minute_time = mtime_,
+                                            reading_1 = reading1_,
+                                            reading_2 = reading2_,
+                                            reading_3 = reading3_,
+                                            reading_4 = reading4_,
+                                            average = average_,
+                                            elevation = elevation_,
+                                            x = x_,
+                                            y = y_,
+                                            remarks = remarks_,
+                                            UTM = utm
+
+
+                                        });
+                                        n++;
+
+                                        n = 1; //reset for line
+                                    }
+                                    //i++;
                                 }
-
                             }
-                            else
-                            {
-                                string serial_ = dataRow.Cell(1).GetValue<string>();
-                                string date_ = dataRow.Cell(2).GetValue<string>();
-                                string line_ = dataRow.Cell(3).GetValue<string>();
-                                string station_ = dataRow.Cell(4).GetValue<string>();
-                                string north_ = dataRow.Cell(5).GetValue<string>();
-                                string east_ = dataRow.Cell(6).GetValue<string>();
-                                string stime_ = dataRow.Cell(7).GetValue<string>();
-                                string mtime_ = dataRow.Cell(8).GetValue<string>();
-                                string reading1_ = dataRow.Cell(9).GetValue<string>();
-                                string reading2_ = dataRow.Cell(10).GetValue<string>();
-                                string reading3_ = dataRow.Cell(11).GetValue<string>();
-                                string reading4_ = dataRow.Cell(12).GetValue<string>();
-                                float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
-                                string average_ = string.Format("{0:N3}", average_num);
-                                string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                string x_ = dataRow.Cell(15).GetValue<string>();
-                                string y_ = dataRow.Cell(16).GetValue<string>();
-                                string remarks_ = dataRow.Cell(17).GetValue<string>();
-                                //convert to utm
-                                Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
-                                string utm = c.UTM.ToString();
-
-                                dataSP.Add(new GridSP()
-                                {
-
-                                    serial = serial_,
-                                    date = date_,
-                                    line = line_,
-                                    station = station_,
-                                    north = north_,
-                                    east = east_,
-                                    second_time = stime_,
-                                    minute_time = mtime_,
-                                    reading_1 = reading1_,
-                                    reading_2 = reading2_,
-                                    reading_3 = reading3_,
-                                    reading_4 = reading4_,
-                                    average = average_,
-                                    elevation = elevation_,
-                                    x = x_,
-                                    y = y_,
-                                    remarks = remarks_,
-                                    UTM = utm
-
-
-                                });
-                                n++;
-
-                                n = 1; //reset for line
-                            }
-                            //i++;
                         }
                     }
                 }
