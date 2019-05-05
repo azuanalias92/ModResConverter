@@ -290,26 +290,25 @@ namespace ModResConverter
         private void comboXSP(string selectedValueX, string selectedValueY)
         {
             dataSP.Clear();
-            string select = selectedValueX.ToString();
             string fileName = fileDialog.FileName;
             try
             {
                 using (var excelWorkbook = new XLWorkbook(fileName))
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
-                    int n = 1;
-
+                    int counter = 0;
                     foreach (var dataRow in nonEmptyDataRows)
                     {
-                        string station = dataRow.Cell(4).GetValue<string>();
                         string x = dataRow.Cell(15).GetValue<string>();
-                        int valueOut = 0;
-                        if (int.TryParse(station, out valueOut))
+                        string y = dataRow.Cell(16).GetValue<string>();
+
+                        if (counter > 0)
                         {
-                          //if (x == selectedValueX)
+                           if (x == selectedValueX)
+                            {
+                                if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                                 {
 
-                                    //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
                                     string serial_ = dataRow.Cell(1).GetValue<string>();
                                     string date_ = dataRow.Cell(2).GetValue<string>();
                                     string line_ = dataRow.Cell(3).GetValue<string>();
@@ -325,40 +324,45 @@ namespace ModResConverter
                                     float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
                                     string average_ = string.Format("{0:N3}", average_num);
                                     string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                    string x_ = dataRow.Cell(15).GetValue<string>();
-                                    string y_ = dataRow.Cell(16).GetValue<string>();
+                                    string x_ = x;
+                                    string y_ = y;
                                     string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                    //Console.WriteLine(x + " | " + north_);
                                     //convert to utm
-                                    Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
-                                    string utm = c.UTM.ToString();
 
-                                    dataSP.Add(new GridSP()
+                                    if (!string.IsNullOrEmpty(north_) || !string.IsNullOrEmpty(east_))
                                     {
+                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2019, 6, 5, 10, 10, 0));
+                                        string utm = c.UTM.ToString();
 
-                                        serial = serial_,
-                                        date = date_,
-                                        line = line_,
-                                        station = station_,
-                                        north = north_,
-                                        east = east_,
-                                        second_time = stime_,
-                                        minute_time = mtime_,
-                                        reading_1 = reading1_,
-                                        reading_2 = reading2_,
-                                        reading_3 = reading3_,
-                                        reading_4 = reading4_,
-                                        average = average_,
-                                        elevation = elevation_,
-                                        x = x_,
-                                        y = y_,
-                                        remarks = remarks_,
-                                        UTM = utm
+                                        dataSP.Add(new GridSP()
+                                        {
 
-
-                                    });
-                                    n++;
+                                            serial = serial_,
+                                            date = date_,
+                                            line = line_,
+                                            station = station_,
+                                            north = north_,
+                                            east = east_,
+                                            second_time = stime_,
+                                            minute_time = mtime_,
+                                            reading_1 = reading1_,
+                                            reading_2 = reading2_,
+                                            reading_3 = reading3_,
+                                            reading_4 = reading4_,
+                                            average = average_,
+                                            elevation = elevation_,
+                                            x = x_,
+                                            y = y_,
+                                            remarks = remarks_,
+                                            UTM = utm
+                                        });
+                                    }
                                 }
+
+                            }
                         }
+                        counter++;
                     }
                 }
 
@@ -410,9 +414,113 @@ namespace ModResConverter
 
         private void comboY_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            String selectedValue = (String)comboY.SelectedValue;
+            String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
 
+            if (Properties.Settings.Default.SP_Setting)
+            {
+                comboYSP(selectedValueX, selectedValueY);
+            }
+            else
+            {
+                comboYRes(selectedValueX, selectedValueY);
+            }
+
+            
+
+        }
+
+        private void comboYSP(string selectedValueX, string selectedValueY)
+        {
+            dataSP.Clear();
+            string fileName = fileDialog.FileName;
+            try
+            {
+                using (var excelWorkbook = new XLWorkbook(fileName))
+                {
+                    var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
+                    int counter = 0;
+                    foreach (var dataRow in nonEmptyDataRows)
+                    {
+                        string x = dataRow.Cell(15).GetValue<string>();
+                        string y = dataRow.Cell(16).GetValue<string>();
+
+                        if (counter > 0)
+                        {
+                            if (y == selectedValueY)
+                            {
+                                if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                                {
+
+                                    string serial_ = dataRow.Cell(1).GetValue<string>();
+                                    string date_ = dataRow.Cell(2).GetValue<string>();
+                                    string line_ = dataRow.Cell(3).GetValue<string>();
+                                    string station_ = dataRow.Cell(4).GetValue<string>();
+                                    string north_ = dataRow.Cell(5).GetValue<string>();
+                                    string east_ = dataRow.Cell(6).GetValue<string>();
+                                    string stime_ = dataRow.Cell(7).GetValue<string>();
+                                    string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                    string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                    string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                    string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                    string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                    float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                    string average_ = string.Format("{0:N3}", average_num);
+                                    string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                    string x_ = x;
+                                    string y_ = y;
+                                    string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                    //Console.WriteLine(x + " | " + north_);
+                                    //convert to utm
+
+                                    if (!string.IsNullOrEmpty(north_) || !string.IsNullOrEmpty(east_))
+                                    {
+                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2019, 6, 5, 10, 10, 0));
+                                        string utm = c.UTM.ToString();
+
+                                        dataSP.Add(new GridSP()
+                                        {
+
+                                            serial = serial_,
+                                            date = date_,
+                                            line = line_,
+                                            station = station_,
+                                            north = north_,
+                                            east = east_,
+                                            second_time = stime_,
+                                            minute_time = mtime_,
+                                            reading_1 = reading1_,
+                                            reading_2 = reading2_,
+                                            reading_3 = reading3_,
+                                            reading_4 = reading4_,
+                                            average = average_,
+                                            elevation = elevation_,
+                                            x = x_,
+                                            y = y_,
+                                            remarks = remarks_,
+                                            UTM = utm
+                                        });
+                                    }
+                                }
+
+                            }
+                        }
+                        counter++;
+                    }
+                }
+
+                dataGrid1.ItemsSource = dataSP;
+                dataGrid1.Items.Refresh();
+
+            }
+            catch
+            {
+                MessageBox.Show("Error");
+            }
+        }
+
+        private void comboYRes(string selectedValueX, string selectedValueY)
+        {
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
@@ -425,7 +533,7 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 1] == selectedValue || selectedValue == "ALL")
+                if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
                 {
                     if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                     {
@@ -437,13 +545,11 @@ namespace ModResConverter
                             Z = fileArray[k, 2]
                         });
                     }
-                       
+
                 }
             }
 
             dataGrid1.ItemsSource = dataGrids;
-            //export.IsEnabled = true;
-
         }
 
         private void comboSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
