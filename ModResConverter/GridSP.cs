@@ -2,8 +2,9 @@
 {
     class GridSP
     {
-        public string serial { get; set; }
         public string date { get; set; }
+        public string serial { get; set; }
+        
         public string line { get; set; }
         public string station { get; set; }
         public string north { get; set; }

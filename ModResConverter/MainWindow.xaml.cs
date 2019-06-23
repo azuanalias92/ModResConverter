@@ -270,7 +270,7 @@ namespace ModResConverter
 
 
             //add value to space
-            Console.WriteLine("maxStation" + maxStation);
+            //Console.WriteLine("maxStation" + maxStation);
             for (int s = 1; s <= maxStation; s++)
             {
                 comboSpace.Items.Add(s);
@@ -788,8 +788,9 @@ namespace ModResConverter
                                             dataSP.Add(new GridSP()
                                             {
 
-                                                serial = serial_,
+                                                
                                                 date = date_,
+                                                serial = serial_,
                                                 line = line_,
                                                 station = station_,
                                                 north = north_,
@@ -885,7 +886,15 @@ namespace ModResConverter
 
         private void comboSpaceRes(int selectedValue)
         {
-            int selectedValueSpace   = (int)comboSpace.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
             String selectedValueY       = (String)comboY.SelectedValue;
             String selectedValueX       = (String)comboX.SelectedValue;
 
@@ -953,12 +962,15 @@ namespace ModResConverter
                         worksheet.Cell("D1").Value = "Z";
                         foreach (GridData GridData in dataGrids)
                         {
-                            worksheet.Cell("A" + row.ToString()).Value = GridData.line.ToString();
-                            worksheet.Cell("B" + row.ToString()).Value = GridData.X.ToString();
-                            worksheet.Cell("C" + row.ToString()).Value = GridData.Y.ToString();
-                            worksheet.Cell("D" + row.ToString()).Value = GridData.Z.ToString();
-                            row++;
-
+                            bool checker = string.IsNullOrEmpty(GridData.X);
+                            if (!checker)
+                            {
+                                worksheet.Cell("A" + row.ToString()).Value = GridData.line.ToString();
+                                worksheet.Cell("B" + row.ToString()).Value = GridData.X.ToString();
+                                worksheet.Cell("C" + row.ToString()).Value = GridData.Y.ToString();
+                                worksheet.Cell("D" + row.ToString()).Value = GridData.Z.ToString();
+                                row++;
+                            }
                         }
                         workbook.SaveAs(saveFileDialog.FileName);
 
@@ -1472,16 +1484,16 @@ namespace ModResConverter
 
         private int excelFileOperation( int a, string filelength, int countline)
         {
+            //Console.WriteLine(a);
             //Console.WriteLine(filelength);
+            //Console.WriteLine(countline);
             using (var excelWorkbook = new XLWorkbook(filelength))
             {
                 var ws = excelWorkbook.Worksheet(1);
                 var nonEmptyDataRows = ws.RowsUsed().Count();
                 int row = nonEmptyDataRows + countline;
-                int m;
-                //Console.WriteLine( a +" / " + row);
-                coordinateArray[a] = row;
                 lengthArray = row;
+                int m;
 
                 //default value
                 if (!comboX.Items.Contains("ALL"))
@@ -1493,63 +1505,118 @@ namespace ModResConverter
                     comboY.Items.Add("ALL");
                 }
 
-                int counter = 0;
-                for (int n = 2; n < nonEmptyDataRows; n++)
-                {
-                    m = countline + counter;
-                    counter++;
-                    //Console.WriteLine(m);
-                    //getdata
-                    String x = ws.Cell(n, 1).GetString();
-                    String y = ws.Cell(n, 2).GetString();
-                    String z = ws.Cell(n, 3).GetString();
-                    //Console.WriteLine(z);
+                var cellString = ws.Cell(1, 1);
+                String string1 = (String)cellString.Value;
 
-
-                    //add to x,y,z axis
-                    if (arrayXaxis.Contains(x) == false)
-                    {
-                        comboX.Items.Add(x);
-                        //////Console.WriteLine(x);
-                    }
-                    arrayXaxis[m] = x;
-                    fileArray[m, 0] = x;
-                    //Console.WriteLine(n);
-
-                    if (arrayYaxis.Contains(y) == false)
-                    {
-                        comboY.Items.Add(y);
-                    }
-
-                    //find max space value
-                    if (Convert.ToDouble(z) > maxStation)
-                    {
-                        //Console.WriteLine(station_);
-                        maxStation = Convert.ToInt32(Convert.ToDouble(z));
-                        Console.WriteLine("max" + maxStation);
-                    }
-                    arrayYaxis[m] = y;
-                    fileArray[m, 1] = y;
-                    fileArray[m, 2] = z;
-                    //Boolean cellDouble = (Boolean)cellBoolean.Value;
-                    //Console.WriteLine(x);
-                }
-
-                countline = row;
                 
+                if (string1 == "X-location") //first set of data
+                {
+                    coordinateArray[a] = row;
+                    int counter = 0;
+                    for (int n = 2; n < nonEmptyDataRows; n++)
+                    {
+                        m = countline + counter;
+                        counter++;
+                        //Console.WriteLine(m);
+                        //getdata
+                        String x = ws.Cell(n, 1).GetString();
+                        String y = ws.Cell(n, 2).GetString();
+                        String z = ws.Cell(n, 3).GetString();
+                        //Console.WriteLine(z);
+
+
+                        //add to x,y,z axis
+                        if (arrayXaxis.Contains(x) == false)
+                        {
+                            comboX.Items.Add(x);
+                            //////Console.WriteLine(x);
+                        }
+                        arrayXaxis[m] = x;
+                        fileArray[m, 0] = x;
+                        //Console.WriteLine(n);
+
+                        if (arrayYaxis.Contains(y) == false)
+                        {
+                            comboY.Items.Add(y);
+                        }
+
+                        //find max space value
+                        if (Convert.ToDouble(z) > maxStation)
+                        {
+                            //Console.WriteLine(station_);
+                            maxStation = Convert.ToInt32(Convert.ToDouble(z));
+                            Console.WriteLine("max" + maxStation);
+                        }
+                        arrayYaxis[m] = y;
+                        fileArray[m, 1] = y;
+                        fileArray[m, 2] = z;
+                        //Boolean cellDouble = (Boolean)cellBoolean.Value;
+                        //Console.WriteLine(x);
+                    }
+                }
+                else //second set of data
+                {
+                    Console.WriteLine("coordinateArray: " + coordinateArray[a]);
+                    int counter = 1;
+                    for (int n = 2; n < nonEmptyDataRows; n++)
+                    {
+                        m = countline + counter;
+                        bool checker = string.IsNullOrEmpty(ws.Cell(n, 2).GetString());
+                        if (!checker)
+                        {
+                            String x = ws.Cell(n, 2).GetString();
+                            String y = ws.Cell(n, 3).GetString();
+                            String z = ws.Cell(n, 4).GetString();
+                            //Console.WriteLine(m);
+
+                            if (arrayXaxis.Contains(x) == false)
+                            {
+                                comboX.Items.Add(x);
+                            }
+                            arrayXaxis[m] = x;
+                            fileArray[m, 0] = x;
+
+                            if (arrayYaxis.Contains(y) == false)
+                            {
+                                comboY.Items.Add(y);
+                            }
+
+                            if (Convert.ToDouble(z) > maxStation)
+                            {
+                                maxStation = Convert.ToInt32(Convert.ToDouble(z));
+                            }
+                            arrayYaxis[m] = y;
+                            fileArray[m, 1] = y;
+                            fileArray[m, 2] = z;
+                            counter++;
+                        }
+                        else
+                        {
+                            var rowCoordinate = n - a;
+                            coordinateArray[a] = rowCoordinate;
+                            a++;
+
+                        }
+                        
+                    }
+                }
+                countline = row;
+
             }
             return countline;
         }
 
         private void clearBtn_Click(object sender, RoutedEventArgs e)
         {
+            path1.Items.Clear();
             comboX.Items.Clear();
             comboY.Items.Clear();
             comboSpace.Items.Clear();
-            path1.Items.Clear();
             dataGrids = null;
             dataSP = null;
             dataGrid1.ItemsSource = null;
+            
+
             //dataGrids.Clear();
         }
 
