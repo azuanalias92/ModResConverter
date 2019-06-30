@@ -7,7 +7,7 @@
 
 Project develop for School Of Physics, Universiti Sains Malaysia. Application is using C# language as primary language. The purpose of this application is to convert seismic data to meaningful data.
 
-![](header.png)
+![](sample.png)
 
 ## Installation
 
@@ -35,22 +35,18 @@ npm test
 
 ## Release History
 
-* 0.2.1
-    * CHANGE: Update docs (module code remains unchanged)
 * 0.2.0
-    * CHANGE: Remove `setDefaultXYZ()`
-    * ADD: Add `init()`
+    * New enchancement
 * 0.1.1
-    * FIX: Crash when calling `baz()` (Thanks @GenerousContributorName!)
+    * FIX: Fix small bugs
 * 0.1.0
-    * The first proper release
-    * CHANGE: Rename `foo()` to `bar()`
+    * First workable program
 * 0.0.1
     * Work in progress
 
 ## Meta
 
-Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
+Your Name – [@AzuanTra](https://twitter.com/azuan_tra) – azuanalias92@gmail.com
 
 Distributed under the XYZ license. See ``LICENSE`` for more information.
 
