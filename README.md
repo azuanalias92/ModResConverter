@@ -46,7 +46,7 @@ Windows:
 
 ## Meta
 
-Azuan Alias – [@azuan_tra](https://twitter.com/azuan_tra) – azuanalias92@gmail.com
+Azuan Alias – [@azuan_tra](https://twitter.com/azuan_tra)
 
 Distributed under the GPL 3.0 license. See ``LICENSE`` for more information.
 
