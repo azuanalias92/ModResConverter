@@ -1,13 +1,22 @@
 # ModResConverter
 > C# Application For Seismic Data Converter
 
-[![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
 
-Project develop for School Of Physics, Universiti Sains Malaysia. Application is using C# language as primary language. The purpose of this application is to convert seismic data to meaningful data.
+
+The project develops for School Of Physics, Universiti Sains Malaysia (USM). The application is using C# language as primary language. The purpose of this application is to convert seismic data to meaningful data such as filtering, scaling and transform.
 
 ![](sample.png)
+
+## Technical Specification
+
+### IDE
+1. Microsoft Visual Studio 2017
+2. .Net Framework 4.6.1
+
+### Open Source Package 
+1. [ClosedXml](https://github.com/ClosedXML/ClosedXML)
+2. [Coordinate Sharp](https://github.com/Tronald/CoordinateSharp)
 
 ## Installation
 
@@ -15,22 +24,22 @@ Windows:
 
 ```sh
 1. Copy the code into Visual Studio 2017.
-2. Run the application.
+2. Install dependencies and package needed
+3. Run the application.
 ```
 
-## Usage example
+## Application Features
 
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
-
-_For more examples and usage, please refer to the [Wiki][wiki]._
+1. Import multiple .dat and excel file data
+2. Filter data based on X, Y and Spacing
+3. SP mode 
+4. Display decimal degree (DD) in degree minute second (DMS)  and universal transverse mercator (UTM)
 
 ## Release History
 
-* 0.2.0
+* 1.1.1
     * New enchancement
-* 0.1.1
-    * FIX: Fix small bugs
-* 0.1.0
+* 1.0.0
     * First workable program
 * 0.0.1
     * Work in progress
