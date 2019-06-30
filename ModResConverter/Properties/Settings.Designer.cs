@@ -241,13 +241,25 @@ namespace ModResConverter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public decimal Space {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UTM {
             get {
-                return ((decimal)(this["Space"]));
+                return ((bool)(this["UTM"]));
             }
             set {
-                this["Space"] = value;
+                this["UTM"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DMS {
+            get {
+                return ((bool)(this["DMS"]));
+            }
+            set {
+                this["DMS"] = value;
             }
         }
     }

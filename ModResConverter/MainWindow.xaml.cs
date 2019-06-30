@@ -359,6 +359,10 @@ namespace ModResConverter
                                                 //convert to utm
                                                 Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                                 string utm = c.UTM.ToString();
+                                                //Convert to DMS
+                                                String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                                String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                                String dms = nDms + " " + eDMS;
 
                                                 dataSP.Add(new GridSP()
                                                 {
@@ -380,7 +384,8 @@ namespace ModResConverter
                                                     x = x_,
                                                     y = y_,
                                                     remarks = remarks_,
-                                                    UTM = utm
+                                                    UTM = utm,
+                                                    DMS = dms
 
 
                                                 });
@@ -411,6 +416,12 @@ namespace ModResConverter
                                             //convert to utm
                                             Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                             string utm = c.UTM.ToString();
+                                            //convert to DMS
+                                            String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                            String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                            String dms = nDms + " " + eDMS;
+
+
 
                                             dataSP.Add(new GridSP()
                                             {
@@ -432,7 +443,8 @@ namespace ModResConverter
                                                 x = x_,
                                                 y = y_,
                                                 remarks = remarks_,
-                                                UTM = utm
+                                                UTM = utm,
+                                                DMS = dms
 
 
                                             });
@@ -576,6 +588,10 @@ namespace ModResConverter
                                                 Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                                 string utm = c.UTM.ToString();
 
+                                                String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                                String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                                String dms = nDms + " " + eDMS;
+
                                                 dataSP.Add(new GridSP()
                                                 {
 
@@ -596,7 +612,8 @@ namespace ModResConverter
                                                     x = x_,
                                                     y = y_,
                                                     remarks = remarks_,
-                                                    UTM = utm
+                                                    UTM = utm,
+                                                    DMS = dms
 
 
                                                 });
@@ -628,6 +645,10 @@ namespace ModResConverter
                                             Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                             string utm = c.UTM.ToString();
 
+                                            String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                            String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                            String dms = nDms + " " + eDMS;
+
                                             dataSP.Add(new GridSP()
                                             {
 
@@ -648,7 +669,8 @@ namespace ModResConverter
                                                 x = x_,
                                                 y = y_,
                                                 remarks = remarks_,
-                                                UTM = utm
+                                                UTM = utm,
+                                                DMS = dms
 
 
                                             });
@@ -786,6 +808,10 @@ namespace ModResConverter
                                             Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                             string utm = c.UTM.ToString();
 
+                                            String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                            String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                            String dms = nDms + " " + eDMS;
+
                                             dataSP.Add(new GridSP()
                                             {
 
@@ -807,7 +833,8 @@ namespace ModResConverter
                                                 x = x_,
                                                 y = y_,
                                                 remarks = remarks_,
-                                                UTM = utm
+                                                UTM = utm,
+                                                DMS = dms
 
 
                                             });
@@ -839,6 +866,10 @@ namespace ModResConverter
                                         Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
                                         string utm = c.UTM.ToString();
 
+                                        String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                        String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                        String dms = nDms + " " + eDMS;
+
                                         dataSP.Add(new GridSP()
                                         {
 
@@ -859,7 +890,8 @@ namespace ModResConverter
                                             x = x_,
                                             y = y_,
                                             remarks = remarks_,
-                                            UTM = utm
+                                            UTM = utm,
+                                            DMS = dms
 
 
                                         });
@@ -1102,7 +1134,19 @@ namespace ModResConverter
                             String cell = String.Concat(countChar, count);
                             worksheet.Cell(cell).Value = "Remarks";
                             countChar++;
+                        }
 
+                        if (Properties.Settings.Default.UTM)
+                        {
+                            String cell = String.Concat(countChar, count);
+                            worksheet.Cell(cell).Value = "UTM";
+                            countChar++;
+                        }
+                        if (Properties.Settings.Default.DMS)
+                        {
+                            String cell = String.Concat(countChar, count);
+                            worksheet.Cell(cell).Value = "DMS";
+                            countChar++;
                         }
 
                         foreach (GridSP GridData in dataSP)
@@ -1211,6 +1255,20 @@ namespace ModResConverter
                             {
                                 String cell = String.Concat(countChar, row);
                                 worksheet.Cell(cell).Value = GridData.remarks.ToString();
+                                countChar++;
+
+                            }
+                            if (Properties.Settings.Default.UTM)
+                            {
+                                String cell = String.Concat(countChar, row);
+                                worksheet.Cell(cell).Value = GridData.UTM.ToString();
+                                countChar++;
+
+                            }
+                            if (Properties.Settings.Default.DMS)
+                            {
+                                String cell = String.Concat(countChar, row);
+                                worksheet.Cell(cell).Value = GridData.DMS.ToString();
                                 countChar++;
 
                             }
@@ -1732,6 +1790,52 @@ namespace ModResConverter
                 toggle_btn.Background = Brushes.LightGreen;
                 toggle_btn.Content = "ON";
             }
+        }
+
+        public enum CoordinateType { longitude, latitude };
+
+        public static string DDtoDMS(double coordinate, CoordinateType type)
+        {
+            // Set flag if number is negative
+            bool neg = coordinate < 0d;
+
+            // Work with a positive number
+            coordinate = Math.Abs(coordinate);
+
+            // Get d/m/s components
+            double d = Math.Floor(coordinate);
+            coordinate -= d;
+            coordinate *= 60;
+            double m = Math.Floor(coordinate);
+            coordinate -= m;
+            coordinate *= 60;
+            double s = Math.Round(coordinate);
+
+            // Create padding character
+            char pad;
+            char.TryParse("0", out pad);
+
+            // Create d/m/s strings
+            string dd = d.ToString();
+            string mm = m.ToString().PadLeft(2, pad);
+            string ss = s.ToString().PadLeft(2, pad);
+
+            // Append d/m/s
+            string dms = string.Format("{0}°{1}'{2}\"", dd, mm, ss);
+
+            // Append compass heading
+            switch (type)
+            {
+                case CoordinateType.longitude:
+                    dms += neg ? "W" : "E";
+                    break;
+                case CoordinateType.latitude:
+                    dms += neg ? "S" : "N";
+                    break;
+            }
+
+            // Return formated string
+            return dms;
         }
     }
 }

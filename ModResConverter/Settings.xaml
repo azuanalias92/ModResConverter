@@ -9,7 +9,7 @@
     <Grid>
         <GroupBox Margin="10,10,10,10" FontSize="16" FontWeight="Bold" Background="LightGray">
             <GroupBox.Header>
-                SP Application
+                SP And Others Application 
             </GroupBox.Header>
         </GroupBox>
         <TextBlock HorizontalAlignment="Left" Height="13" Margin="26,50,0,0" VerticalAlignment="Top" Width="118" Text="Mode"/>
@@ -48,7 +48,10 @@
         <CheckBox x:Name="y_cb" HorizontalAlignment="Left" Margin="254,380,0,0" VerticalAlignment="Top" RenderTransformOrigin="3,1" Checked="CheckBoxChanged15" Unchecked="CheckBoxChanged15"/>
         <TextBlock  HorizontalAlignment="Left" Height="13" Margin="26,400,0,0" VerticalAlignment="Top" Width="118" Text="Remarks"/>
         <CheckBox x:Name="remark_cb" HorizontalAlignment="Left" Margin="254,400,0,0" VerticalAlignment="Top" RenderTransformOrigin="3,1" Checked="CheckBoxChanged16" Unchecked="CheckBoxChanged16"/>
-        <TextBlock  HorizontalAlignment="Left" Height="18" Margin="26,420,0,0" VerticalAlignment="Top" Width="118" Text="Space"/>
-        <TextBox x:Name="space_tb" HorizontalAlignment="Left" Margin="227,420,0,0" VerticalAlignment="Top" Width="43"  TextChanged="textChangedEventHandler"></TextBox>
+        <TextBlock  HorizontalAlignment="Left" Height="18" Margin="26,420,0,0" VerticalAlignment="Top" Width="118" Text="UTM"/>
+        <CheckBox x:Name="utm_cb" HorizontalAlignment="Left" Margin="254,420,0,0" VerticalAlignment="Top" RenderTransformOrigin="3,1" Checked="CheckBoxChanged17" Unchecked="CheckBoxChanged17"/>
+        <TextBlock  HorizontalAlignment="Left" Height="18" Margin="26,440,0,0" VerticalAlignment="Top" Width="118" Text="DMS"/>
+        <CheckBox x:Name="dms_cb" HorizontalAlignment="Left" Margin="254,440,0,0" VerticalAlignment="Top" RenderTransformOrigin="3,1" Checked="CheckBoxChanged18" Unchecked="CheckBoxChanged18"/>
+        
     </Grid>
 </Window>

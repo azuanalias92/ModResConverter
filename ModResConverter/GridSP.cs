@@ -21,6 +21,7 @@
         public string y { get; set; }
         public string remarks { get; set; }
         public string UTM { get; set; }
+        public string DMS { get; set; }
 
 
     }

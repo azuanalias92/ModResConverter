@@ -55,7 +55,9 @@ namespace ModResConverter
             x_cb.IsChecked = Properties.Settings.Default.X;
             y_cb.IsChecked = Properties.Settings.Default.Y;
             remark_cb.IsChecked = Properties.Settings.Default.Remarks;
-            space_tb.Text = Properties.Settings.Default.Space.ToString();
+            utm_cb.IsChecked = Properties.Settings.Default.UTM;
+            dms_cb.IsChecked = Properties.Settings.Default.DMS;
+            //space_tb.Text = Properties.Settings.Default.UTM.ToString();
 
         }
 
@@ -188,9 +190,15 @@ namespace ModResConverter
                 Properties.Settings.Default.Remarks = (bool)remark_cb.IsChecked;
             }
 
-        private void textChangedEventHandler(object sender, TextChangedEventArgs e)
+        private void CheckBoxChanged17(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.Space = Int32.Parse(space_tb.Text);
+            Properties.Settings.Default.UTM = (bool)utm_cb.IsChecked;
         }
+        private void CheckBoxChanged18(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.DMS = (bool)dms_cb.IsChecked;
+        }
+
+
     }
 }

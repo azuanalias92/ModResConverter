@@ -56,8 +56,11 @@
     <Setting Name="Serial_number" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="Space" Type="System.Decimal" Scope="User">
-      <Value Profile="(Default)">100</Value>
+    <Setting Name="UTM" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DMS" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
