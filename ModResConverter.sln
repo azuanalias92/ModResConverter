@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModResConverter", "ModResConverter\ModResConverter.csproj", "{5514CCBA-066B-4E86-9F6D-6099D8AE4403}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortD", "ModResConverter\SortD.csproj", "{5514CCBA-066B-4E86-9F6D-6099D8AE4403}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupModResConverter", "SetupModResConverter\SetupModResConverter.vdproj", "{015AD4BE-D6B0-40AA-B604-1E4706960F35}"
 EndProject

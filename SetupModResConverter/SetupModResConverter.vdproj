@@ -3,7 +3,7 @@
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:SetupModResConverter"
+"ProjectName" = "8:SetupSortD"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -153,7 +153,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\SetupModResConverter.msi"
+        "OutputFilename" = "8:Debug\\SortD.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -202,6 +202,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
     }
@@ -586,20 +594,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:ModResConverter"
-        "ProductCode" = "8:{5D28565F-6925-42B7-A999-8651C8CE827C}"
-        "PackageCode" = "8:{CB5D3649-D550-46FF-97D1-5854384AB210}"
+        "ProductName" = "8:SortD"
+        "ProductCode" = "8:{8BC327D9-FEF5-45BE-B10E-5FDE4E08E53B}"
+        "PackageCode" = "8:{239D99B6-DC63-4A89-9F45-C2C95AF891E6}"
         "UpgradeCode" = "8:{F7D153A3-E0A0-4205-8A33-E5CD55B2CF82}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.1.1"
+        "ProductVersion" = "8:1.1.2"
         "Manufacturer" = "8:Azuan Alias"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:SetupModResConverter"
+        "Title" = "8:SortD"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Azuan Alias"
         "Keywords" = "8:"
@@ -724,7 +732,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_CF28105276E64D6C99D9E260DFEFFEEF"
             {
-            "Name" = "8:ModResConverter"
+            "Name" = "8:SortD"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -1137,7 +1145,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7F603B637FC9432895991D46AF6C1D44"
             {
-            "SourcePath" = "8:..\\ModResConverter\\obj\\Debug\\ModResConverter.exe"
+            "SourcePath" = "8:..\\ModResConverter\\obj\\Debug\\SortD.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_C1ED1201C65A4D2A836B463CF738A203"

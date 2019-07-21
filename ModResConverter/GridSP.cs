@@ -1,4 +1,4 @@
-﻿namespace ModResConverter
+﻿namespace SortD
 {
     class GridSP
     {

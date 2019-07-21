@@ -10,7 +10,7 @@ using Microsoft.Win32;
 using CoordinateSharp;
 using System.Windows.Media;
 
-namespace ModResConverter
+namespace SortD
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -35,7 +35,7 @@ namespace ModResConverter
         public MainWindow()
         {
             InitializeComponent();
-            this.Title = "ModResConverter";
+            this.Title = "SortD";
             //Application.Current.MainWindow.WindowState = WindowState.Maximized;
             //export.IsEnabled = false;
             comboX.IsEnabled = false;
@@ -700,6 +700,16 @@ namespace ModResConverter
 
         private void comboYRes(string selectedValueX, string selectedValueY)
         {
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
+
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
@@ -712,19 +722,25 @@ namespace ModResConverter
                     lines = "Line " + z;
                 }
                 //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
+                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
                 {
-                    if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                    if (Convert.ToDouble(fileArray[k, 0]) == a)
                     {
-                        dataGrids.Add(new GridData()
+                        if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
                         {
-                            line = lines,
-                            X = fileArray[k, 0],
-                            Y = fileArray[k, 1],
-                            Z = fileArray[k, 2]
-                        });
-                    }
+                            if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                            {
+                                dataGrids.Add(new GridData()
+                                {
+                                    line = lines,
+                                    X = fileArray[k, 0],
+                                    Y = fileArray[k, 1],
+                                    Z = fileArray[k, 2]
+                                });
+                            }
 
+                        }
+                    }
                 }
             }
 
@@ -934,7 +950,7 @@ namespace ModResConverter
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-            for (int k = 1; k < lengthArray; k++)
+            for (int k = 0; k < lengthArray; k++)
             {
 
                 if (coordinateArray[z] == k)
@@ -942,10 +958,10 @@ namespace ModResConverter
                     z++;
                     lines = "Line " + z;
                 }
-                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                for (int a = maxStation; a > 0; a-= selectedValueSpace)
+
+                for (double a = Convert.ToDouble(fileArray[0,0]); a < maxStation; a += selectedValueSpace)
                 {
-                    if(Convert.ToInt32(Convert.ToDouble(fileArray[k, 2])) == a)
+                    if (Convert.ToDouble(fileArray[k, 0]) == a)
                     {
                         if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                         {
@@ -962,10 +978,10 @@ namespace ModResConverter
 
                         }
                     }
-                    
+
                 }
 
-                
+
             }
 
             dataGrid1.ItemsSource = dataGrids;
@@ -1482,17 +1498,20 @@ namespace ModResConverter
                             string p_replace = p.Replace("\"", "");
                             if (j == 0)
                             {
+                                //find highest value for comboSpace
+                                if (Convert.ToDouble(p) > maxStation)
+                                {
+                                    maxStation = Convert.ToInt32(Convert.ToDouble(p));
+                                }
+
                                 if (arrayXaxis.Contains(p) == false && p_replace != "X-location,Z-location,Resistivity")
                                 {
                                     comboX.Items.Add(p);
                                     TempList.Add(p);
 
                                 }
-                                //Console.WriteLine(i + "/" + j + "/" + p);
                                 arrayXaxis[i] = p;
                                 fileArray[i, j] = p;
-                                //Console.WriteLine(fileArray[i, j]);
-
                                 j++;
                             }
                             else if (j == 1)
@@ -1507,16 +1526,6 @@ namespace ModResConverter
                             }
                             else if (j == 2)
                             {
-                                Console.WriteLine(p);
-                                //find highest value for comboSpace
-                                if (Convert.ToDouble(p) > maxStation)
-                                {
-                                    //Console.WriteLine(station_);
-                                    maxStation = Convert.ToInt32(Convert.ToDouble(p));
-                                    Console.WriteLine("max" + maxStation);
-                                }
-
-                                
                                 fileArray[i, j] = p;
                                 j = -1;
                             }
@@ -1592,9 +1601,9 @@ namespace ModResConverter
                             comboY.Items.Add(y);
                         }
 
-                        if (Convert.ToDouble(z) > maxStation)
+                        if (Convert.ToDouble(x) > maxStation)
                         {
-                            maxStation = Convert.ToInt32(Convert.ToDouble(z));
+                            maxStation = Convert.ToInt32(Convert.ToDouble(x));
                         }
                         arrayYaxis[m] = y;
                         fileArray[m, 1] = y;
@@ -1655,9 +1664,9 @@ namespace ModResConverter
                                         comboY.Items.Add(y);
                                     }
 
-                                    if (Convert.ToDouble(z) > maxStation)
+                                    if (Convert.ToDouble(x) > maxStation)
                                     {
-                                        maxStation = Convert.ToInt32(Convert.ToDouble(z));
+                                        maxStation = Convert.ToInt32(Convert.ToDouble(x));
                                     }
                                     arrayYaxis[m] = y;
                                     fileArray[m, 1] = y;
