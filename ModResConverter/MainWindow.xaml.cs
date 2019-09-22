@@ -249,7 +249,7 @@ namespace SortD
                     }
                     else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                     {
-                        // Console.WriteLine(countLine);
+                        Console.WriteLine("countLine : " + countLine);
                         countLine = excelFileOperation(a, filelength, countLine);
                     }
                     else
@@ -478,7 +478,7 @@ namespace SortD
             int z = 1;
             string lines = "Line 1";
             Console.WriteLine(lengthArray);
-            for (int k = 1; k < lengthArray; k++)
+            for (int k = 0; k < lengthArray; k++)
             {
 
                 if (coordinateArray[z] == k)
@@ -486,11 +486,12 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
-                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
+                Console.WriteLine(k +"/"+ fileArray[k, 0]);
                 if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL")
                 {
                     if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                     {
+                        Console.WriteLine(fileArray[k, 0]);
                         Double x_double;
                         Double.TryParse(fileArray[k, 0], out x_double);
                         Double y_double;
@@ -713,7 +714,7 @@ namespace SortD
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-            for (int k = 1; k < lengthArray; k++)
+            for (int k = 0; k < lengthArray; k++)
             {
 
                 if (coordinateArray[z] == k)
@@ -721,11 +722,11 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
-                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
-                {
-                    if (Convert.ToDouble(fileArray[k, 0]) == a)
-                    {
+                Console.WriteLine(k +"/"+ fileArray[k, 0]);
+                //for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
+                //{
+                //    if (Convert.ToDouble(fileArray[k, 0]) == a)
+                //    {
                         if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
                         {
                             if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
@@ -740,8 +741,8 @@ namespace SortD
                             }
 
                         }
-                    }
-                }
+                //    }
+                //}
             }
 
             dataGrid1.ItemsSource = dataGrids;
@@ -1554,13 +1555,13 @@ namespace SortD
         {
             //Console.WriteLine(a);
             //Console.WriteLine(filelength);
-            //Console.WriteLine(countline);
+
             using (var excelWorkbook = new XLWorkbook(filelength))
             {
                 var ws = excelWorkbook.Worksheet(1);
                 var nonEmptyDataRows = ws.RowsUsed().Count();
                 int row = nonEmptyDataRows + countline;
-                lengthArray = row;
+                lengthArray = row - 1;
                 int m;
 
                 //default value
@@ -1580,10 +1581,12 @@ namespace SortD
                 {
                     coordinateArray[a] = row;
                     int counter = 0;
-                    for (int n = 2; n < nonEmptyDataRows; n++)
+                    for (int n = 2; n <= nonEmptyDataRows; n++)
                     {
                         m = countline + counter;
                         counter++;
+
+                        
 
                         String x = ws.Cell(n, 1).GetString();
                         String y = ws.Cell(n, 2).GetString();
@@ -1595,7 +1598,9 @@ namespace SortD
                         }
                         arrayXaxis[m] = x;
                         fileArray[m, 0] = x;
- 
+
+                        Console.WriteLine(m + " / " + x);
+
                         if (arrayYaxis.Contains(y) == false)
                         {
                             comboY.Items.Add(y);
@@ -1845,6 +1850,11 @@ namespace SortD
 
             // Return formated string
             return dms;
+        }
+
+        void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
     }
 }
