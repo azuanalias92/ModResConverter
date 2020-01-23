@@ -40,7 +40,7 @@ namespace SortD
             //export.IsEnabled = false;
             comboX.IsEnabled = false;
             comboY.IsEnabled = false;
-            comboSpace.IsEnabled = false; 
+            comboSpace.IsEnabled = false;
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace SortD
 
         private void OpenDialog()
         {
-            
+
             lengthArray = 0;
             fileDialog = new OpenFileDialog();
             if (Properties.Settings.Default.SP_Setting)
@@ -70,7 +70,7 @@ namespace SortD
                 fileDialog.Filter = "All files (*.*)|*.*";
                 fileDialog.Multiselect = true;
             }
-            
+
 
             if (fileDialog.ShowDialog() == true)
             {
@@ -86,7 +86,7 @@ namespace SortD
                 {
                     comboSpace.IsEnabled = false;
                     openFile();
-                }           
+                }
             }
         }
 
@@ -105,20 +105,20 @@ namespace SortD
             {
                 comboY.Items.Add("ALL");
             }
-            
+
             try
             {
                 using (var excelWorkbook = new XLWorkbook(fileName))
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
                     int i = 0;
-                    
+
                     foreach (var dataRow in nonEmptyDataRows)
                     {
 
                         if (i > 0)
                         {
-                            
+
                             string station_ = dataRow.Cell(4).GetValue<string>();
                             string x_ = dataRow.Cell(15).GetValue<string>();
                             string y_ = dataRow.Cell(16).GetValue<string>();
@@ -189,7 +189,7 @@ namespace SortD
             //looping for length of each file
             int a = 1;
             TempList = new List<string>();
-            
+
             int totalLine = 0;
             int countLine = 0;
             bool fileLock = false;
@@ -238,7 +238,7 @@ namespace SortD
                             MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
                         }
                     }
-                    
+
                 }
             }
 
@@ -269,7 +269,7 @@ namespace SortD
                     }
                 }
                 a++;
-                
+
             }
 
             //Sort Value ComboBox
@@ -298,7 +298,7 @@ namespace SortD
             String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
             String selectedValueSpace = (String)comboSpace.SelectedValue;
-           
+
             if (Properties.Settings.Default.SP_Setting)
             {
                 Console.WriteLine("selectedValueSpace " + selectedValueSpace);
@@ -329,9 +329,9 @@ namespace SortD
 
                         if (counter > 0)
                         {
-                           if (x == selectedValueX || selectedValueX == "ALL")
+                            if (x == selectedValueX || selectedValueX == "ALL")
                             {
-                                
+
                                 if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                                 {
                                     string station = dataRow.Cell(4).GetValue<string>();
@@ -339,7 +339,7 @@ namespace SortD
                                     if (!isDigit)
                                     {
                                         station = station.Remove(0, 1);
-                                        if(Convert.ToInt32(station) == 1)
+                                        if (Convert.ToInt32(station) == 1)
                                         {
                                             n = 1; //reset value;
                                         }
@@ -349,7 +349,7 @@ namespace SortD
                                     {
                                         if (Convert.ToInt32(station) != 0)
                                         {
-                                            if(selectedValueSpace != null)
+                                            if (selectedValueSpace != null)
                                             {
                                                 bool isDigit2 = !string.IsNullOrEmpty(selectedValueSpace) && char.IsDigit(selectedValueSpace[0]);
                                                 if (!isDigit2)
@@ -362,7 +362,7 @@ namespace SortD
                                             {
                                                 selectedValueSpace = "1";
                                             }
-                                            
+
                                             Console.WriteLine("selectedValueSpace " + selectedValueSpace);
                                             if (Convert.ToInt32(station) == (Convert.ToInt32(selectedValueSpace) * n))
                                             {
@@ -555,7 +555,7 @@ namespace SortD
             }
             else
             {
-                comboYRes(selectedValueX,selectedValueY);
+                comboYRes(selectedValueX, selectedValueY);
             }
         }
 
@@ -577,7 +577,7 @@ namespace SortD
 
                         if (counter > 0)
                         {
-                            if (y == selectedValueY  || selectedValueY == "ALL")
+                            if (y == selectedValueY || selectedValueY == "ALL")
                             {
                                 if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                                 {
@@ -769,25 +769,25 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
-                Console.WriteLine(k +"/"+ fileArray[k, 0]);
+                Console.WriteLine(k + "/" + fileArray[k, 0]);
                 //for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
                 //{
                 //    if (Convert.ToDouble(fileArray[k, 0]) == a)
                 //    {
-                        if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
+                if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
+                {
+                    if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                    {
+                        dataGrids.Add(new GridData()
                         {
-                            if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
-                            {
-                                dataGrids.Add(new GridData()
-                                {
-                                    line = lines,
-                                    X = fileArray[k, 0],
-                                    Y = fileArray[k, 1],
-                                    Z = fileArray[k, 2]
-                                });
-                            }
+                            line = lines,
+                            X = fileArray[k, 0],
+                            Y = fileArray[k, 1],
+                            Z = fileArray[k, 2]
+                        });
+                    }
 
-                        }
+                }
                 //    }
                 //}
             }
@@ -797,9 +797,9 @@ namespace SortD
 
         private void comboSpace_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            String selectedValueY       = (String)comboY.SelectedValue;
-            String selectedValueX       = (String)comboX.SelectedValue;
-            
+            String selectedValueY = (String)comboY.SelectedValue;
+            String selectedValueX = (String)comboX.SelectedValue;
+
             if (Properties.Settings.Default.SP_Setting)
             {
                 String selectedValueSpace = (String)comboSpace.SelectedValue;
@@ -823,7 +823,7 @@ namespace SortD
         private void comboSpaceSP(String selectedValueX, String selectedValueY, String selectedValueSpace)
         {
             dataSP.Clear();
-            if(selectedValueSpace != null)
+            if (selectedValueSpace != null)
             {
                 bool isDigit = !string.IsNullOrEmpty(selectedValueSpace) && char.IsDigit(selectedValueSpace[0]);
                 if (!isDigit)
@@ -833,7 +833,7 @@ namespace SortD
 
                 }
             }
-            
+
             string fileName = fileDialog.FileName;
             try
             {
@@ -845,7 +845,7 @@ namespace SortD
 
                     foreach (var dataRow in nonEmptyDataRows)
                     {
-                        if(counter > 0)
+                        if (counter > 0)
                         {
 
                             string station = dataRow.Cell(4).GetValue<string>();
@@ -1021,8 +1021,8 @@ namespace SortD
             {
                 selectedValueSpace = 1;
             }
-            String selectedValueY       = (String)comboY.SelectedValue;
-            String selectedValueX       = (String)comboX.SelectedValue;
+            String selectedValueY = (String)comboY.SelectedValue;
+            String selectedValueX = (String)comboX.SelectedValue;
 
             dataGrids = new List<GridData>();
             int z = 1;
@@ -1036,7 +1036,7 @@ namespace SortD
                     lines = "Line " + z;
                 }
 
-                for (double a = Convert.ToDouble(fileArray[0,0]); a < maxStation; a += selectedValueSpace)
+                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
                 {
                     if (Convert.ToDouble(fileArray[k, 0]) == a)
                     {
@@ -1066,7 +1066,7 @@ namespace SortD
 
         private void export_Click(object sender, RoutedEventArgs e)
         {
-            if(dataGrids != null)
+            if (dataGrids != null)
             {
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
@@ -1104,7 +1104,7 @@ namespace SortD
                     }
                 }
             }
-            else if(dataSP != null)
+            else if (dataSP != null)
             {
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
@@ -1378,12 +1378,12 @@ namespace SortD
             {
                 MessageBox.Show("No Data. Please upload data first!");
             }
-            
+
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            
+
             if (win1 != null)
             {
                 if (win1.WindowState == WindowState.Minimized)
@@ -1401,7 +1401,7 @@ namespace SortD
                 win1 = new Settings();
                 win1.Show();
             }
-            
+
         }
 
         private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -1529,7 +1529,7 @@ namespace SortD
                 }
 
             }
-            
+
         }
 
         private int datFileOperation(int a, string filelength, int countline, int totalLine)
@@ -1627,7 +1627,7 @@ namespace SortD
             return countline;
         }
 
-        private int excelFileOperation( int a, string filelength, int countline)
+        private int excelFileOperation(int a, string filelength, int countline)
         {
             //Console.WriteLine(a);
             //Console.WriteLine(filelength);
@@ -1662,12 +1662,12 @@ namespace SortD
                         m = countline + counter;
                         counter++;
 
-                        
+
 
                         String x = ws.Cell(n, 1).GetString();
                         String y = ws.Cell(n, 2).GetString();
                         String z = ws.Cell(n, 3).GetString();
-                        
+
                         if (arrayXaxis.Contains(x) == false)
                         {
                             comboX.Items.Add(x);
@@ -1691,13 +1691,13 @@ namespace SortD
                         fileArray[m, 2] = z;
                     }
                 }
-                else if(string1 == "Line 1")
+                else if (string1 == "Line 1")
                 {
                     var totalColumns = ws.Columns().Count();
                     Console.WriteLine("total column  : " + totalColumns);
-                    for (int i = 1; i < totalColumns; i =  i + 4)
+                    for (int i = 1; i < totalColumns; i = i + 4)
                     {
-                        
+
                         String line = (String)ws.Cell(1, i).Value;
                         bool checker = string.IsNullOrEmpty(line);
                         if (!checker)
@@ -1707,7 +1707,7 @@ namespace SortD
                             for (int n = 2; n < nonEmptyDataRows + 1; n++)
                             {
                                 m = countline + counter;
-                                
+
                                 counter++;
 
                                 var xRow = i + 1;
@@ -1722,10 +1722,10 @@ namespace SortD
                                 bool bx = string.IsNullOrEmpty(x);
                                 bool by = string.IsNullOrEmpty(y);
                                 bool bz = string.IsNullOrEmpty(z);
-                                
-                                if(!bx && !by & !bz)
+
+                                if (!bx && !by & !bz)
                                 {
-                                    if(m == 3905)
+                                    if (m == 3905)
                                     {
                                         Console.WriteLine("m : " + m);
                                         Console.WriteLine("x : " + x);
@@ -1811,7 +1811,7 @@ namespace SortD
                             a++;
 
                         }
-                        
+
                     }
                 }
                 countline = row;
@@ -1829,7 +1829,7 @@ namespace SortD
             dataGrids = null;
             dataSP = null;
             dataGrid1.ItemsSource = null;
-            
+
 
             //dataGrids.Clear();
         }
