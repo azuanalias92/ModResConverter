@@ -260,7 +260,7 @@ namespace SortD
                     }
                     else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                     {
-                        Console.WriteLine("countLine : " + countLine);
+                        // Console.WriteLine(countLine);
                         countLine = excelFileOperation(a, filelength, countLine);
                     }
                     else
@@ -507,9 +507,14 @@ namespace SortD
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
+<<<<<<< HEAD
 
             //loop for each array
             for (int k = 0; k < lengthArray; k++)
+=======
+            Console.WriteLine(lengthArray);
+            for (int k = 1; k < lengthArray; k++)
+>>>>>>> parent of 4314271... fix min max value of excel no display
             {
                 //increament for each line
                 if (coordinateArray[z] == k)
@@ -517,8 +522,12 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
+<<<<<<< HEAD
 
                 //X-location filter out
+=======
+                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
+>>>>>>> parent of 4314271... fix min max value of excel no display
                 if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL")
                 {
                     //Y-location filter out
@@ -761,7 +770,7 @@ namespace SortD
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-            for (int k = 0; k < lengthArray; k++)
+            for (int k = 1; k < lengthArray; k++)
             {
 
                 if (coordinateArray[z] == k)
@@ -769,6 +778,7 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
+<<<<<<< HEAD
                 Console.WriteLine(k + "/" + fileArray[k, 0]);
                 //for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
                 //{
@@ -779,6 +789,14 @@ namespace SortD
                     if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                     {
                         dataGrids.Add(new GridData()
+=======
+                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
+                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
+                {
+                    if (Convert.ToDouble(fileArray[k, 0]) == a)
+                    {
+                        if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
+>>>>>>> parent of 4314271... fix min max value of excel no display
                         {
                             line = lines,
                             X = fileArray[k, 0],
@@ -787,9 +805,15 @@ namespace SortD
                         });
                     }
 
+<<<<<<< HEAD
                 }
                 //    }
                 //}
+=======
+                        }
+                    }
+                }
+>>>>>>> parent of 4314271... fix min max value of excel no display
             }
 
             dataGrid1.ItemsSource = dataGrids;
@@ -1631,13 +1655,13 @@ namespace SortD
         {
             //Console.WriteLine(a);
             //Console.WriteLine(filelength);
-
+            //Console.WriteLine(countline);
             using (var excelWorkbook = new XLWorkbook(filelength))
             {
                 var ws = excelWorkbook.Worksheet(1);
                 var nonEmptyDataRows = ws.RowsUsed().Count();
                 int row = nonEmptyDataRows + countline;
-                lengthArray = row - 1;
+                lengthArray = row;
                 int m;
 
                 //default value
@@ -1657,13 +1681,16 @@ namespace SortD
                 {
                     coordinateArray[a] = row;
                     int counter = 0;
-                    for (int n = 2; n <= nonEmptyDataRows; n++)
+                    for (int n = 2; n < nonEmptyDataRows; n++)
                     {
                         m = countline + counter;
                         counter++;
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of 4314271... fix min max value of excel no display
                         String x = ws.Cell(n, 1).GetString();
                         String y = ws.Cell(n, 2).GetString();
                         String z = ws.Cell(n, 3).GetString();
@@ -1674,9 +1701,7 @@ namespace SortD
                         }
                         arrayXaxis[m] = x;
                         fileArray[m, 0] = x;
-
-                        Console.WriteLine(m + " / " + x);
-
+ 
                         if (arrayYaxis.Contains(y) == false)
                         {
                             comboY.Items.Add(y);
@@ -1926,11 +1951,6 @@ namespace SortD
 
             // Return formated string
             return dms;
-        }
-
-        void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
-        {
-            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
     }
 }

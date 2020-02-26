@@ -29,7 +29,7 @@
         <Label Content="Y-location" HorizontalAlignment="Left" Margin="900,75,0,0" VerticalAlignment="Top"  Foreground="White"/>
         <ComboBox x:Name="comboY"  HorizontalAlignment="Left" Margin="900,100,50,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboY_SelectionChanged"/>
         <Label Content="Data" HorizontalAlignment="Left" Margin="50,200,0,0" VerticalAlignment="Top" Width="100" Foreground="White"/>
-        <DataGrid x:Name="dataGrid1" LoadingRow="DataGrid_LoadingRow" AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_OnAutoGeneratingColumn" HorizontalAlignment="Left" Height="250" Margin="50,225,0,0"  VerticalAlignment="Top" Width="965" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Padding="0">
+        <DataGrid x:Name="dataGrid1" AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_OnAutoGeneratingColumn" HorizontalAlignment="Left" Height="250" Margin="50,225,0,0"  VerticalAlignment="Top" Width="965" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Padding="0">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="10"/>
