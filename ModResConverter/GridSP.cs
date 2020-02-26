@@ -9,8 +9,8 @@
         public string station { get; set; }
         public string north { get; set; }
         public string east { get; set; }
-        public string second_time { get; set; }
-        public string minute_time { get; set; }
+        public string second { get; set; }
+        public string minute { get; set; }
         public string reading_1 { get; set; }
         public string reading_2 { get; set; }
         public string reading_3 { get; set; }

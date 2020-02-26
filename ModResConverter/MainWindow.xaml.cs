@@ -40,7 +40,7 @@ namespace SortD
             //export.IsEnabled = false;
             comboX.IsEnabled = false;
             comboY.IsEnabled = false;
-            comboSpace.IsEnabled = false;
+            comboSpace.IsEnabled = false; 
         }
 
         private void btn1_Click(object sender, RoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace SortD
 
         private void OpenDialog()
         {
-
+            
             lengthArray = 0;
             fileDialog = new OpenFileDialog();
             if (Properties.Settings.Default.SP_Setting)
@@ -70,7 +70,7 @@ namespace SortD
                 fileDialog.Filter = "All files (*.*)|*.*";
                 fileDialog.Multiselect = true;
             }
-
+            
 
             if (fileDialog.ShowDialog() == true)
             {
@@ -86,7 +86,7 @@ namespace SortD
                 {
                     comboSpace.IsEnabled = false;
                     openFile();
-                }
+                }           
             }
         }
 
@@ -112,13 +112,13 @@ namespace SortD
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
                     int i = 0;
-
+                    
                     foreach (var dataRow in nonEmptyDataRows)
                     {
 
                         if (i > 0)
                         {
-
+                            
                             string station_ = dataRow.Cell(4).GetValue<string>();
                             string x_ = dataRow.Cell(15).GetValue<string>();
                             string y_ = dataRow.Cell(16).GetValue<string>();
@@ -132,40 +132,29 @@ namespace SortD
                             {
                                 comboY.Items.Add(y_);
                             }
-                            if (!comboSpace.Items.Contains(station_))
+                            
+
+                            //find highest value for comboSpace
+                            int valueOut = 0;
+                            if (int.TryParse(station_, out valueOut))
                             {
-                                comboSpace.Items.Add(station_);
+
+                                if (Convert.ToInt32(station_) > maxStation)
+                                {
+                                    //Console.WriteLine(station_);
+                                    maxStation = Convert.ToInt32(station_);
+                                }
+
                             }
-
-
-                            ////find highest value for comboSpace
-                            //int valueOut = 0;
-                            //if (int.TryParse(station_, out valueOut)) //integer
-                            //{
-
-                            //    if (Convert.ToInt32(station_) > maxStation)
-                            //    {
-                            //        //Console.WriteLine(station_);
-                            //        maxStation = Convert.ToInt32(station_);
-                            //    }
-
-                            //}
-                            //else
-                            //{
-                            //    if (!comboX.Items.Contains(x_))
-                            //    {
-                            //        comboX.Items.Add(x_);
-                            //    }
-                            //}
 
                         }
                         i = 1;
                     }
                 }
-                //for (int a = 1; a <= maxStation; a++)
-                //{
-                //    comboSpace.Items.Add(a);
-                //}
+                for (int a = 1; a <= maxStation; a++)
+                {
+                    comboSpace.Items.Add(a);
+                }
                 comboSpace.IsEnabled = true;
                 comboX.IsEnabled = true;
                 comboY.IsEnabled = true;
@@ -189,7 +178,7 @@ namespace SortD
             //looping for length of each file
             int a = 1;
             TempList = new List<string>();
-
+            
             int totalLine = 0;
             int countLine = 0;
             bool fileLock = false;
@@ -238,7 +227,7 @@ namespace SortD
                             MessageBox.Show("Undefined file type. Please reupload only .dat and excel files");
                         }
                     }
-
+                    
                 }
             }
 
@@ -260,7 +249,7 @@ namespace SortD
                     }
                     else if (fileType == ".xls" || fileType == ".xlsx" || fileType == ".xlsm")
                     {
-                        // Console.WriteLine(countLine);
+                        Console.WriteLine("countLine : " + countLine);
                         countLine = excelFileOperation(a, filelength, countLine);
                     }
                     else
@@ -269,7 +258,7 @@ namespace SortD
                     }
                 }
                 a++;
-
+                
             }
 
             //Sort Value ComboBox
@@ -295,13 +284,19 @@ namespace SortD
         private void comboX_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
-            String selectedValueSpace = (String)comboSpace.SelectedValue;
-
+            String selectedValueY = (String)comboY.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
             if (Properties.Settings.Default.SP_Setting)
             {
-                Console.WriteLine("selectedValueSpace " + selectedValueSpace);
                 comboXSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
@@ -310,7 +305,7 @@ namespace SortD
             }
         }
 
-        private void comboXSP(string selectedValueX, string selectedValueY, String selectedValueSpace)
+        private void comboXSP(string selectedValueX, string selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
             string fileName = fileDialog.FileName;
@@ -329,44 +324,20 @@ namespace SortD
 
                         if (counter > 0)
                         {
-                            if (x == selectedValueX || selectedValueX == "ALL")
+                           if (x == selectedValueX || selectedValueX == "ALL")
                             {
-
                                 if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                                 {
                                     string station = dataRow.Cell(4).GetValue<string>();
-                                    bool isDigit = !string.IsNullOrEmpty(station) && char.IsDigit(station[0]);
-                                    if (!isDigit)
-                                    {
-                                        station = station.Remove(0, 1);
-                                        if (Convert.ToInt32(station) == 1)
-                                        {
-                                            n = 1; //reset value;
-                                        }
-                                    }
                                     int valueOut = 0;
                                     if (int.TryParse(station, out valueOut))
                                     {
+                                        //Console.WriteLine(Convert.ToInt32(station));
                                         if (Convert.ToInt32(station) != 0)
                                         {
-                                            if (selectedValueSpace != null)
+                                            if (Convert.ToInt32(station) == (selectedValueSpace * n))
                                             {
-                                                bool isDigit2 = !string.IsNullOrEmpty(selectedValueSpace) && char.IsDigit(selectedValueSpace[0]);
-                                                if (!isDigit2)
-                                                {
-                                                    selectedValueSpace = selectedValueSpace.Remove(0, 1);
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                selectedValueSpace = "1";
-                                            }
-
-                                            Console.WriteLine("selectedValueSpace " + selectedValueSpace);
-                                            if (Convert.ToInt32(station) == (Convert.ToInt32(selectedValueSpace) * n))
-                                            {
-                                                //Console.WriteLine(dataRow.Cell(4).GetValue<string>());
+                                                //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
                                                 string serial_ = dataRow.Cell(1).GetValue<string>();
                                                 string date_ = dataRow.Cell(2).GetValue<string>();
                                                 string line_ = dataRow.Cell(3).GetValue<string>();
@@ -402,8 +373,8 @@ namespace SortD
                                                     station = station_,
                                                     north = north_,
                                                     east = east_,
-                                                    second_time = stime_,
-                                                    minute_time = mtime_,
+                                                    second = stime_,
+                                                    minute = mtime_,
                                                     reading_1 = reading1_,
                                                     reading_2 = reading2_,
                                                     reading_3 = reading3_,
@@ -461,8 +432,8 @@ namespace SortD
                                                 station = station_,
                                                 north = north_,
                                                 east = east_,
-                                                second_time = stime_,
-                                                minute_time = mtime_,
+                                                second = stime_,
+                                                minute = mtime_,
                                                 reading_1 = reading1_,
                                                 reading_2 = reading2_,
                                                 reading_3 = reading3_,
@@ -503,41 +474,28 @@ namespace SortD
 
         private void comboXRes(string selectedValueX, string selectedValueY)
         {
-            //initiliase value
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-<<<<<<< HEAD
-
-            //loop for each array
-            for (int k = 0; k < lengthArray; k++)
-=======
             Console.WriteLine(lengthArray);
-            for (int k = 1; k < lengthArray; k++)
->>>>>>> parent of 4314271... fix min max value of excel no display
+            for (int k = 0; k < lengthArray; k++)
             {
-                //increament for each line
+
                 if (coordinateArray[z] == k)
                 {
                     z++;
                     lines = "Line " + z;
                 }
-<<<<<<< HEAD
-
-                //X-location filter out
-=======
-                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
->>>>>>> parent of 4314271... fix min max value of excel no display
+                Console.WriteLine(k +"/"+ fileArray[k, 0]);
                 if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL")
                 {
-                    //Y-location filter out
                     if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                     {
+                        Console.WriteLine(fileArray[k, 0]);
                         Double x_double;
                         Double.TryParse(fileArray[k, 0], out x_double);
                         Double y_double;
                         Double.TryParse(fileArray[k, 1], out y_double);
-                        //load data to grid data
                         dataGrids.Add(new GridData()
                         {
                             line = lines,
@@ -556,10 +514,18 @@ namespace SortD
         {
             String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
 
             if (Properties.Settings.Default.SP_Setting)
             {
-                String selectedValueSpace = (String)comboSpace.SelectedValue;
                 comboYSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
@@ -568,7 +534,7 @@ namespace SortD
             }
         }
 
-        private void comboYSP(string selectedValueX, string selectedValueY, string selectedValueSpace)
+        private void comboYSP(string selectedValueX, string selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
             string fileName = fileDialog.FileName;
@@ -586,41 +552,19 @@ namespace SortD
 
                         if (counter > 0)
                         {
-                            if (y == selectedValueY || selectedValueY == "ALL")
+                            if (y == selectedValueY  || selectedValueY == "ALL")
                             {
                                 if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                                 {
 
                                     string station = dataRow.Cell(4).GetValue<string>();
-                                    bool isDigit = !string.IsNullOrEmpty(station) && char.IsDigit(station[0]);
-                                    if (!isDigit)
-                                    {
-                                        station = station.Remove(0, 1);
-                                        if (Convert.ToInt32(station) == 1)
-                                        {
-                                            n = 1; //reset value;
-                                        }
-                                    }
                                     int valueOut = 0;
                                     if (int.TryParse(station, out valueOut))
                                     {
                                         //Console.WriteLine(Convert.ToInt32(station));
                                         if (Convert.ToInt32(station) != 0)
                                         {
-                                            if (selectedValueSpace != null)
-                                            {
-                                                bool isDigit2 = !string.IsNullOrEmpty(selectedValueSpace) && char.IsDigit(selectedValueSpace[0]);
-                                                if (!isDigit2)
-                                                {
-                                                    selectedValueSpace = selectedValueSpace.Remove(0, 1);
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                selectedValueSpace = "1";
-                                            }
-                                            if (Convert.ToInt32(station) == (Convert.ToInt32(selectedValueSpace) * n))
+                                            if (Convert.ToInt32(station) == (selectedValueSpace * n))
                                             {
                                                 //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
                                                 string serial_ = dataRow.Cell(1).GetValue<string>();
@@ -658,8 +602,8 @@ namespace SortD
                                                     station = station_,
                                                     north = north_,
                                                     east = east_,
-                                                    second_time = stime_,
-                                                    minute_time = mtime_,
+                                                    second = stime_,
+                                                    minute = mtime_,
                                                     reading_1 = reading1_,
                                                     reading_2 = reading2_,
                                                     reading_3 = reading3_,
@@ -715,8 +659,8 @@ namespace SortD
                                                 station = station_,
                                                 north = north_,
                                                 east = east_,
-                                                second_time = stime_,
-                                                minute_time = mtime_,
+                                                second = stime_,
+                                                minute = mtime_,
                                                 reading_1 = reading1_,
                                                 reading_2 = reading2_,
                                                 reading_3 = reading3_,
@@ -770,7 +714,7 @@ namespace SortD
             dataGrids = new List<GridData>();
             int z = 1;
             string lines = "Line 1";
-            for (int k = 1; k < lengthArray; k++)
+            for (int k = 0; k < lengthArray; k++)
             {
 
                 if (coordinateArray[z] == k)
@@ -778,42 +722,27 @@ namespace SortD
                     z++;
                     lines = "Line " + z;
                 }
-<<<<<<< HEAD
-                Console.WriteLine(k + "/" + fileArray[k, 0]);
+                Console.WriteLine(k +"/"+ fileArray[k, 0]);
                 //for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
                 //{
                 //    if (Convert.ToDouble(fileArray[k, 0]) == a)
                 //    {
-                if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
-                {
-                    if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
-                    {
-                        dataGrids.Add(new GridData()
-=======
-                //Console.WriteLine(k +"/"+ fileArray[k, 3]);
-                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
-                {
-                    if (Convert.ToDouble(fileArray[k, 0]) == a)
-                    {
                         if (fileArray[k, 1] == selectedValueY || selectedValueY == "ALL")
->>>>>>> parent of 4314271... fix min max value of excel no display
                         {
-                            line = lines,
-                            X = fileArray[k, 0],
-                            Y = fileArray[k, 1],
-                            Z = fileArray[k, 2]
-                        });
-                    }
+                            if (fileArray[k, 0] == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
+                            {
+                                dataGrids.Add(new GridData()
+                                {
+                                    line = lines,
+                                    X = fileArray[k, 0],
+                                    Y = fileArray[k, 1],
+                                    Z = fileArray[k, 2]
+                                });
+                            }
 
-<<<<<<< HEAD
-                }
+                        }
                 //    }
                 //}
-=======
-                        }
-                    }
-                }
->>>>>>> parent of 4314271... fix min max value of excel no display
             }
 
             dataGrid1.ItemsSource = dataGrids;
@@ -823,41 +752,30 @@ namespace SortD
         {
             String selectedValueY = (String)comboY.SelectedValue;
             String selectedValueX = (String)comboX.SelectedValue;
+            int selectedValueSpace;
+            try
+            {
+                selectedValueSpace = (int)comboSpace.SelectedValue;
+            }
+            catch
+            {
+                selectedValueSpace = 1;
+            }
 
             if (Properties.Settings.Default.SP_Setting)
             {
-                String selectedValueSpace = (String)comboSpace.SelectedValue;
                 comboSpaceSP(selectedValueX, selectedValueY, selectedValueSpace);
             }
             else
             {
-                int selectedValueSpace2;
-                try
-                {
-                    selectedValueSpace2 = (int)comboSpace.SelectedValue;
-                }
-                catch
-                {
-                    selectedValueSpace2 = 1;
-                }
-                comboSpaceRes(selectedValueSpace2);
+                comboSpaceRes(selectedValueSpace);
             }
         }
 
-        private void comboSpaceSP(String selectedValueX, String selectedValueY, String selectedValueSpace)
+        private void comboSpaceSP(String selectedValueX, String selectedValueY, int selectedValueSpace)
         {
             dataSP.Clear();
-            if (selectedValueSpace != null)
-            {
-                bool isDigit = !string.IsNullOrEmpty(selectedValueSpace) && char.IsDigit(selectedValueSpace[0]);
-                if (!isDigit)
-                {
-                    selectedValueSpace = selectedValueSpace.Remove(0, 1);
-                    Console.WriteLine(" selectedValueSpace " + selectedValueSpace);
-
-                }
-            }
-
+            string select = selectedValueSpace.ToString();
             string fileName = fileDialog.FileName;
             try
             {
@@ -865,100 +783,26 @@ namespace SortD
                 {
                     var nonEmptyDataRows = excelWorkbook.Worksheet(1).RowsUsed();
                     int n = 1;
-                    int counter = 0;
 
                     foreach (var dataRow in nonEmptyDataRows)
                     {
-                        if (counter > 0)
+                        string station = dataRow.Cell(4).GetValue<string>();
+                        string x = dataRow.Cell(15).GetValue<string>();
+                        string y = dataRow.Cell(16).GetValue<string>();
+                        int valueOut = 0;
+
+                        if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
                         {
-
-                            string station = dataRow.Cell(4).GetValue<string>();
-                            bool isDigit2 = !string.IsNullOrEmpty(station) && char.IsDigit(station[0]);
-                            if (!isDigit2)
+                            if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
                             {
-                                station = station.Remove(0, 1);
-                                Console.WriteLine("station " + station);
-                                if (Convert.ToInt32(station) == 1)
+                                if (int.TryParse(station, out valueOut))
                                 {
-                                    n = 1; //reset value;
-                                }
-
-                            }
-                            string x = dataRow.Cell(15).GetValue<string>();
-                            string y = dataRow.Cell(16).GetValue<string>();
-                            int valueOut = 0;
-                            Console.WriteLine("here " + x);
-
-                            if (y == selectedValueY || selectedValueY == "ALL" || selectedValueY == null)
-                            {
-                                if (x == selectedValueX || selectedValueX == "ALL" || selectedValueX == null)
-                                {
-                                    if (int.TryParse(station, out valueOut))
+                                    //Console.WriteLine(Convert.ToInt32(station));
+                                    if (Convert.ToInt32(station) != 0)
                                     {
-                                        Console.WriteLine("here " + Convert.ToInt32(station));
-                                        if (Convert.ToInt32(station) != 0)
+                                        if (Convert.ToInt32(station) == (selectedValueSpace * n))
                                         {
-                                            if (Convert.ToInt32(station) == (Convert.ToInt32(selectedValueSpace) * n))
-                                            {
-                                                //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
-                                                string serial_ = dataRow.Cell(1).GetValue<string>();
-                                                string date_ = dataRow.Cell(2).GetValue<string>();
-                                                string line_ = dataRow.Cell(3).GetValue<string>();
-                                                string station_ = dataRow.Cell(4).GetValue<string>();
-                                                string north_ = dataRow.Cell(5).GetValue<string>();
-                                                string east_ = dataRow.Cell(6).GetValue<string>();
-                                                string stime_ = dataRow.Cell(7).GetValue<string>();
-                                                string mtime_ = dataRow.Cell(8).GetValue<string>();
-                                                string reading1_ = dataRow.Cell(9).GetValue<string>();
-                                                string reading2_ = dataRow.Cell(10).GetValue<string>();
-                                                string reading3_ = dataRow.Cell(11).GetValue<string>();
-                                                string reading4_ = dataRow.Cell(12).GetValue<string>();
-                                                float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
-                                                string average_ = string.Format("{0:N3}", average_num);
-                                                string elevation_ = dataRow.Cell(14).GetValue<string>();
-                                                string x_ = dataRow.Cell(15).GetValue<string>();
-                                                string y_ = dataRow.Cell(16).GetValue<string>();
-                                                string remarks_ = dataRow.Cell(17).GetValue<string>();
-                                                //convert to utm
-                                                Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
-                                                string utm = c.UTM.ToString();
-
-                                                String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
-                                                String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
-                                                String dms = nDms + " " + eDMS;
-
-                                                dataSP.Add(new GridSP()
-                                                {
-
-
-                                                    date = date_,
-                                                    serial = serial_,
-                                                    line = line_,
-                                                    station = station_,
-                                                    north = north_,
-                                                    east = east_,
-                                                    second_time = stime_,
-                                                    minute_time = mtime_,
-                                                    reading_1 = reading1_,
-                                                    reading_2 = reading2_,
-                                                    reading_3 = reading3_,
-                                                    reading_4 = reading4_,
-                                                    average = average_,
-                                                    elevation = elevation_,
-                                                    x = x_,
-                                                    y = y_,
-                                                    remarks = remarks_,
-                                                    UTM = utm,
-                                                    DMS = dms
-
-
-                                                });
-                                                n++;
-                                            }
-
-                                        }
-                                        else
-                                        {
+                                            //Console.WriteLine(dataRow.Cell(2).GetValue<string>());
                                             string serial_ = dataRow.Cell(1).GetValue<string>();
                                             string date_ = dataRow.Cell(2).GetValue<string>();
                                             string line_ = dataRow.Cell(3).GetValue<string>();
@@ -988,14 +832,15 @@ namespace SortD
                                             dataSP.Add(new GridSP()
                                             {
 
-                                                serial = serial_,
+                                                
                                                 date = date_,
+                                                serial = serial_,
                                                 line = line_,
                                                 station = station_,
                                                 north = north_,
                                                 east = east_,
-                                                second_time = stime_,
-                                                minute_time = mtime_,
+                                                second = stime_,
+                                                minute = mtime_,
                                                 reading_1 = reading1_,
                                                 reading_2 = reading2_,
                                                 reading_3 = reading3_,
@@ -1011,15 +856,70 @@ namespace SortD
 
                                             });
                                             n++;
-
-                                            n = 1; //reset for line
                                         }
-                                        //i++;
+
                                     }
+                                    else
+                                    {
+                                        string serial_ = dataRow.Cell(1).GetValue<string>();
+                                        string date_ = dataRow.Cell(2).GetValue<string>();
+                                        string line_ = dataRow.Cell(3).GetValue<string>();
+                                        string station_ = dataRow.Cell(4).GetValue<string>();
+                                        string north_ = dataRow.Cell(5).GetValue<string>();
+                                        string east_ = dataRow.Cell(6).GetValue<string>();
+                                        string stime_ = dataRow.Cell(7).GetValue<string>();
+                                        string mtime_ = dataRow.Cell(8).GetValue<string>();
+                                        string reading1_ = dataRow.Cell(9).GetValue<string>();
+                                        string reading2_ = dataRow.Cell(10).GetValue<string>();
+                                        string reading3_ = dataRow.Cell(11).GetValue<string>();
+                                        string reading4_ = dataRow.Cell(12).GetValue<string>();
+                                        float average_num = (dataRow.Cell(9).GetValue<float>() + dataRow.Cell(10).GetValue<float>() + dataRow.Cell(11).GetValue<float>() + dataRow.Cell(12).GetValue<float>()) / 4;
+                                        string average_ = string.Format("{0:N3}", average_num);
+                                        string elevation_ = dataRow.Cell(14).GetValue<string>();
+                                        string x_ = dataRow.Cell(15).GetValue<string>();
+                                        string y_ = dataRow.Cell(16).GetValue<string>();
+                                        string remarks_ = dataRow.Cell(17).GetValue<string>();
+                                        //convert to utm
+                                        Coordinate c = new Coordinate(dataRow.Cell(5).GetValue<double>(), dataRow.Cell(6).GetValue<double>(), new DateTime(2018, 6, 5, 10, 10, 0));
+                                        string utm = c.UTM.ToString();
+
+                                        String nDms = DDtoDMS(dataRow.Cell(5).GetValue<double>(), CoordinateType.latitude);
+                                        String eDMS = DDtoDMS(dataRow.Cell(6).GetValue<double>(), CoordinateType.longitude);
+                                        String dms = nDms + " " + eDMS;
+
+                                        dataSP.Add(new GridSP()
+                                        {
+
+                                            serial = serial_,
+                                            date = date_,
+                                            line = line_,
+                                            station = station_,
+                                            north = north_,
+                                            east = east_,
+                                            second = stime_,
+                                            minute = mtime_,
+                                            reading_1 = reading1_,
+                                            reading_2 = reading2_,
+                                            reading_3 = reading3_,
+                                            reading_4 = reading4_,
+                                            average = average_,
+                                            elevation = elevation_,
+                                            x = x_,
+                                            y = y_,
+                                            remarks = remarks_,
+                                            UTM = utm,
+                                            DMS = dms
+
+
+                                        });
+                                        n++;
+
+                                        n = 1; //reset for line
+                                    }
+                                    //i++;
                                 }
                             }
                         }
-                        counter++;
                     }
                 }
 
@@ -1045,8 +945,8 @@ namespace SortD
             {
                 selectedValueSpace = 1;
             }
-            String selectedValueY = (String)comboY.SelectedValue;
-            String selectedValueX = (String)comboX.SelectedValue;
+            String selectedValueY       = (String)comboY.SelectedValue;
+            String selectedValueX       = (String)comboX.SelectedValue;
 
             dataGrids = new List<GridData>();
             int z = 1;
@@ -1060,7 +960,7 @@ namespace SortD
                     lines = "Line " + z;
                 }
 
-                for (double a = Convert.ToDouble(fileArray[0, 0]); a < maxStation; a += selectedValueSpace)
+                for (double a = Convert.ToDouble(fileArray[0,0]); a < maxStation; a += selectedValueSpace)
                 {
                     if (Convert.ToDouble(fileArray[k, 0]) == a)
                     {
@@ -1090,7 +990,7 @@ namespace SortD
 
         private void export_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGrids != null)
+            if(dataGrids != null)
             {
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
@@ -1128,7 +1028,7 @@ namespace SortD
                     }
                 }
             }
-            else if (dataSP != null)
+            else if(dataSP != null)
             {
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
@@ -1308,13 +1208,13 @@ namespace SortD
                             if (Properties.Settings.Default.Second)
                             {
                                 String cell = String.Concat(countChar, row);
-                                worksheet.Cell(cell).Value = GridData.second_time.ToString();
+                                worksheet.Cell(cell).Value = GridData.second.ToString();
                                 countChar++;
                             }
                             if (Properties.Settings.Default.Minute)
                             {
                                 String cell = String.Concat(countChar, row);
-                                worksheet.Cell(cell).Value = GridData.minute_time.ToString();
+                                worksheet.Cell(cell).Value = GridData.minute.ToString();
                                 countChar++;
                             }
                             if (Properties.Settings.Default.Reading_1)
@@ -1402,12 +1302,12 @@ namespace SortD
             {
                 MessageBox.Show("No Data. Please upload data first!");
             }
-
+            
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            
             if (win1 != null)
             {
                 if (win1.WindowState == WindowState.Minimized)
@@ -1425,7 +1325,7 @@ namespace SortD
                 win1 = new Settings();
                 win1.Show();
             }
-
+            
         }
 
         private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -1474,14 +1374,14 @@ namespace SortD
             }
             if (!Properties.Settings.Default.Second)
             {
-                if (e.PropertyName == "second_time")
+                if (e.PropertyName == "second")
                 {
                     e.Column = null;
                 }
             }
             if (!Properties.Settings.Default.Minute)
             {
-                if (e.PropertyName == "minute_time")
+                if (e.PropertyName == "minute")
                 {
                     e.Column = null;
                 }
@@ -1553,7 +1453,7 @@ namespace SortD
                 }
 
             }
-
+            
         }
 
         private int datFileOperation(int a, string filelength, int countline, int totalLine)
@@ -1651,17 +1551,17 @@ namespace SortD
             return countline;
         }
 
-        private int excelFileOperation(int a, string filelength, int countline)
+        private int excelFileOperation( int a, string filelength, int countline)
         {
             //Console.WriteLine(a);
             //Console.WriteLine(filelength);
-            //Console.WriteLine(countline);
+
             using (var excelWorkbook = new XLWorkbook(filelength))
             {
                 var ws = excelWorkbook.Worksheet(1);
                 var nonEmptyDataRows = ws.RowsUsed().Count();
                 int row = nonEmptyDataRows + countline;
-                lengthArray = row;
+                lengthArray = row - 1;
                 int m;
 
                 //default value
@@ -1681,27 +1581,26 @@ namespace SortD
                 {
                     coordinateArray[a] = row;
                     int counter = 0;
-                    for (int n = 2; n < nonEmptyDataRows; n++)
+                    for (int n = 2; n <= nonEmptyDataRows; n++)
                     {
                         m = countline + counter;
                         counter++;
 
-<<<<<<< HEAD
+                        
 
-
-=======
->>>>>>> parent of 4314271... fix min max value of excel no display
                         String x = ws.Cell(n, 1).GetString();
                         String y = ws.Cell(n, 2).GetString();
                         String z = ws.Cell(n, 3).GetString();
-
+                        
                         if (arrayXaxis.Contains(x) == false)
                         {
                             comboX.Items.Add(x);
                         }
                         arrayXaxis[m] = x;
                         fileArray[m, 0] = x;
- 
+
+                        Console.WriteLine(m + " / " + x);
+
                         if (arrayYaxis.Contains(y) == false)
                         {
                             comboY.Items.Add(y);
@@ -1716,13 +1615,13 @@ namespace SortD
                         fileArray[m, 2] = z;
                     }
                 }
-                else if (string1 == "Line 1")
+                else if(string1 == "Line 1")
                 {
                     var totalColumns = ws.Columns().Count();
                     Console.WriteLine("total column  : " + totalColumns);
-                    for (int i = 1; i < totalColumns; i = i + 4)
+                    for (int i = 1; i < totalColumns; i =  i + 4)
                     {
-
+                        
                         String line = (String)ws.Cell(1, i).Value;
                         bool checker = string.IsNullOrEmpty(line);
                         if (!checker)
@@ -1732,7 +1631,7 @@ namespace SortD
                             for (int n = 2; n < nonEmptyDataRows + 1; n++)
                             {
                                 m = countline + counter;
-
+                                
                                 counter++;
 
                                 var xRow = i + 1;
@@ -1747,10 +1646,10 @@ namespace SortD
                                 bool bx = string.IsNullOrEmpty(x);
                                 bool by = string.IsNullOrEmpty(y);
                                 bool bz = string.IsNullOrEmpty(z);
-
-                                if (!bx && !by & !bz)
+                                
+                                if(!bx && !by & !bz)
                                 {
-                                    if (m == 3905)
+                                    if(m == 3905)
                                     {
                                         Console.WriteLine("m : " + m);
                                         Console.WriteLine("x : " + x);
@@ -1836,7 +1735,7 @@ namespace SortD
                             a++;
 
                         }
-
+                        
                     }
                 }
                 countline = row;
@@ -1854,7 +1753,7 @@ namespace SortD
             dataGrids = null;
             dataSP = null;
             dataGrid1.ItemsSource = null;
-
+            
 
             //dataGrids.Clear();
         }
@@ -1951,6 +1850,11 @@ namespace SortD
 
             // Return formated string
             return dms;
+        }
+
+        void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
     }
 }
